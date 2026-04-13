@@ -133,7 +133,9 @@ custom_fences = [
 # 阅读更多：
 # - https://zensical.org/docs/customization/#extending-the-theme
 #
-#custom_dir = "overrides"
+# 目前添加了评论系统
+#
+custom_dir = "docs/overrides"
 
 # 使用 "favicon" 选项，您可以设置自己的图像作为浏览器在浏览器标题栏或
 # 标签栏中使用的图标。提供的路径必须相对于 "docs_dir"。
