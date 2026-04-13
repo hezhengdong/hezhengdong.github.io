@@ -1,0 +1,2395 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hzd's notes">
+      
+      
+        <meta name="author" content="hzd">
+      
+      
+        <link rel="canonical" href="https://hezhengdong.github.io/sys/mit-6830/lab2/">
+      
+      
+        <link rel="prev" href="../lab1/">
+      
+      
+        <link rel="next" href="../lab3/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../images/book.png">
+      <meta name="generator" content="zensical-0.0.32">
+    
+    
+      
+        <title>Lab2 火山模型与LRU-K - hzd's notes</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.53a7feaf.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="导航栏"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lab2-lru-k" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="hzd&#x27;s notes" class="md-header__button md-logo" aria-label="hzd's notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="导航栏">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            hzd's notes
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Lab2 火山模型与LRU-K
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="查找">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="查找">
+  <button type="button" class="md-search__button">
+    查找
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/hezhengdong/hezhengdong.github.io" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="hzd&#x27;s notes" class="md-nav__button md-logo" aria-label="hzd's notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    hzd's notes
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hezhengdong/hezhengdong.github.io" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SYS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SYS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_1" id="__nav_1_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIT 6.5840 Lab 记录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    MIT 6.5840 Lab 记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mit-65840/lab1-mapreduce/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab1 MapReduce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mit-65840/lab2-kvstore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab2 Key/Value Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mit-65840/lab3a-leader-election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab3A Leader Election
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mit-65840/lab3b-log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab3B Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mit-65840/lab3-raft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab3 Raft
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mit-65840/lab4-fault-tolerant-kvstore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab4 Fault-tolerant Key/Value Service
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mit-65840/lab5-sharded-kvstore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab5 Sharded Key/Value Service
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../time-clocks-paper-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文阅读 Time-Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIT 6.830 Lab 记录
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1_3" id="__nav_1_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    MIT 6.830 Lab 记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lab1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab1 基本组件与位图管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab2 火山模型与LRU-K
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab2 火山模型与LRU-K
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        基本存储引擎
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DML实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DML实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#insert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insert
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Select
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        操作符实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="操作符实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模板方法模式
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filterjoin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filter&amp;Join
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        火山模型
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="火山模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        介绍
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        其他
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lab3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab3 Join成本估算与System-R优化器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lab4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab4 两阶段锁与死锁检测
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lab5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab5 B+树索引实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lab6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab6 ARIES恢复算法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lru-k-paper-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文阅读 LRU-K
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DEV
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DEV
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消息推送平台
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    消息推送平台
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%8E%A5%E5%85%A5%E5%B1%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    接入层
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消息队列
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E8%B4%B9%E5%B1%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消费层
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    定时任务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    链路追踪
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ETC
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ETC
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ai/2025-the-year-in-llms-reading-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2025: The year in LLMs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ai/rag-learning-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG 学习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../c-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C 语言复习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        基本存储引擎
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DML实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DML实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#insert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insert
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#select" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Select
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        操作符实现
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="操作符实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模板方法模式
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filterjoin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filter&amp;Join
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        火山模型
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="火山模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        介绍
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        实现
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        其他
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="导航栏" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Index
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../mit-65840/lab1-mapreduce/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    SYS
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    MIT 6.830 Lab 记录
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+    <a href="https://github.com/hezhengdong/hezhengdong.github.io/edit/master/docs/sys/mit-6830/lab2.md" title="编辑此页" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/hezhengdong/hezhengdong.github.io/raw/master/docs/sys/mit-6830/lab2.md" title="查看本页的源代码" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-code-2" viewBox="0 0 24 24"><path d="M4 12.15V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2h-3.35"/><path d="M14 2v5a1 1 0 0 0 1 1h5M5 16l-3 3 3 3M9 22l3-3-3-3"/></svg>
+    </a>
+  
+
+
+<h1 id="lab2-lru-k">Lab2 火山模型与LRU-K</h1>
+<p>Lab2 实验目标：</p>
+<ul>
+<li>实现数据库存储引擎关键模块（BufferPool/HeapFile/HeapPage）。</li>
+<li>基于存储引擎，实现基本的 DML 操作（增/删/查，从操作符到磁盘）。</li>
+<li>基于火山模型，利用模板方法模式，实现操作符，构建基本的执行引擎。</li>
+</ul>
+<p>参考链接</p>
+<p><a href="https://thomas-li-sjtu.github.io/2022/06/17/Simple-DB-Lab2/">MIT-6.830 Lab2 总结与备忘 thomas-li-sjtu.github.io</a></p>
+<p><a href="https://github.com/lidaohang/ceph_study/blob/master/LRU-K%E5%92%8C2Q%E7%BC%93%E5%AD%98%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D.md">LRU-K和2Q缓存算法介绍</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/591436083">经典论文解读——Cache 替换算法</a>（讲了各种缓存替换算法，拓展眼界。）</p>
+<p>关键：</p>
+<ul>
+<li>BufferPool LRU 页面淘汰策略、脏页管理。</li>
+<li>HeapPage 页式存储结构，通过位图管理页中元组。</li>
+<li>模板方法模式、火山模型。</li>
+</ul>
+<p>其他：</p>
+<ul>
+<li>SimpleDB 中主要实现 DML（数据库操作语言）的增删查，并没有实现 DDL（数据库设计语言）。</li>
+<li>代码框架已经提供了大部分 I/O 操作的具体实现。</li>
+</ul>
+<pre class="mermaid"><code>flowchart TB
+    subgraph 存储层
+        Disk[(磁盘)] &lt;--&gt; HeapFile
+        HeapFile &lt;--&gt; HeapPage1
+        HeapFile &lt;--&gt; HeapPage2
+    end
+
+    subgraph 内存层
+        BufferPool &lt;--&gt; HeapPage1
+        BufferPool &lt;--&gt; HeapPage2
+    end
+
+    subgraph 执行引擎
+        Operator --&gt; Filter
+        Operator --&gt; Join
+        Operator --&gt; Aggregate
+        Operator --&gt; Insert
+        Operator --&gt; Delete
+    end
+
+    Filter --&gt; BufferPool
+    Join --&gt; BufferPool</code></pre>
+<h2 id="_1">基本存储引擎</h2>
+<p>BufferPool</p>
+<ul>
+<li>LRU 页面淘汰策略（<code>getPage</code>/<code>evictPage</code>）</li>
+<li>脏页管理（<code>flushPage</code>/<code>markDirty</code>）</li>
+</ul>
+<p>HeapFile&amp;HeapPage</p>
+<ul>
+<li>磁盘与业务逻辑交互的关键。</li>
+<li>HeapFile 是磁盘交互的管理者，HeapPage 是数据页面的内存表示。</li>
+<li>I/O 的关键就在于此，HeapPage 相当于一个用来让业务逻辑与磁盘交互的中间态。</li>
+<li>例如 insertTuple，将 Tuple 所在页面从磁盘反序列化为内存中的 HeapPage，实现 insertTuple 逻辑后，再将修改后的 HeapPage 序列化进磁盘，完成数据页的修改。</li>
+<li>课程框架已经实现了 SimpleDB 中的大部分 I/O 操作。（看来课程设计者认为 I/O 不是重点。）</li>
+</ul>
+<p>关键方法（细节在"DML实现"的时序图中）</p>
+<ul>
+<li>BufferPool.getPage</li>
+<li>BufferPool.insertTuple&amp;deleteTuple</li>
+<li>HeapFile.readPage&amp;writePage</li>
+</ul>
+<h2 id="dml">DML实现</h2>
+<p>增：<code>Insert.fetchNext</code> -&gt; <code>ButterPool.insertTuple</code> -&gt; <code>HeapFile.insertTuple</code> -&gt; <code>HeapPage.insertTuple</code> -&gt; <code>HeapFile.writePage</code></p>
+<p>删：<code>Delete.fetchNext</code> -&gt; <code>ButterPool.deleteTuple</code> -&gt; <code>HeapFile.deleteTuple</code> -&gt; <code>HeapPage.deleteTuple</code> -&gt; （不需要写入磁盘，只需去除 header 标记即可，后续 Insert 会覆盖磁盘数据）</p>
+<p>改：先 Delete 后 Insert。</p>
+<p>查：<code>SeqScan.next</code> -&gt; <code>HeapFile.iterator</code> -&gt; <code>DbFileIterator.next</code> -&gt; <code>DbFileIterator.loadNextPage</code> -&gt; <code>BufferPool.getPage</code> -&gt; <code>HeapFile.readPage</code> -&gt; <code>new HeapPage</code></p>
+<h3 id="insert">Insert</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant I as Insert.fetchNext
+    participant BP as BufferPool
+    participant HF as HeapFile
+    participant HF2 as HeapFile
+    participant HP as HeapPage
+    participant D as Disk
+
+    I-&gt;&gt;BP: BufferPool.insertTuple
+    activate BP
+    BP-&gt;&gt;BP: 根据 Tuple 的 RecordId 定位到 DbFile&lt;br/&gt;调用DbFile.insertTuple
+    BP-&gt;&gt;HF: HeapFile.insertTuple(TransactionId, Tuple)
+        activate HF
+        HF-&gt;&gt;HF: 1. 查找有空槽的页面&lt;br/&gt;2. 若无则创建新页
+        HF-&gt;&gt;HF: 3. BufferPool.getPage&lt;br&gt;（细节见"查询元组"）
+        alt 如果页面未满
+        HF-&gt;&gt;HP: HeapPage.insertTuple(Tuple)
+            activate HP
+            HP-&gt;&gt;HP: 1. 线性扫描寻找第一个空闲槽位&lt;br/&gt;2. 插入元组并设置 RecordId
+            HP--&gt;&gt;HF: 
+            deactivate HP
+        else 如果页面已满
+            HF-&gt;&gt;HP: new HeapPage()
+            HF-&gt;&gt;HP: HeapPage.insertTuple(Tuple)
+            activate HP
+            HP-&gt;&gt;HP: 1. 线性扫描寻找第一个空闲槽位&lt;br/&gt;2. 插入元组并设置 RecordId
+            HP--&gt;&gt;HF: 
+            deactivate HP
+
+            alt HeapFile.writePage
+            HF-&gt;&gt;HF2: 将页面写入磁盘中，writePage()&lt;br&gt;Lab 4 中碰到的 bug&lt;br&gt;这里是唯一一个需要写入磁盘，而不是借助 BufferPool 交互的地方。&lt;br&gt;因为 HeapFile 记录表中页的数目是通过文件长度计算的，&lt;br&gt;所以创建新页面时，必须将页写入磁盘中，否则会出错。
+                activate HF2
+                    HF2-&gt;&gt;HF2: 根据页面大小与页面数计算出&lt;br/&gt;指向 DbFile 末尾的指针偏移量
+                    HF2-&gt;&gt;HP: Page.getPageData
+                    activate HP
+                        HP-&gt;&gt;HP: 函数内部通过一系列操作&lt;br/&gt;将 Page 组装为 byte 数组
+                        HP--&gt;&gt;HF2: return byte[] data
+                    deactivate HP
+                    HF2-&gt;&gt;D: 通过 IO 流，向文件末尾&lt;br/&gt;写入 Page 的二进制数据
+                    HF2-&gt;&gt;HF2: file.close()
+                deactivate HF2
+            HF2--&gt;&gt;HF: 
+            end
+
+         end
+        HF--&gt;&gt;BP: 返回被修改的页面 ArrayList&lt;Page&gt;
+        deactivate HF
+    BP-&gt;&gt;HP: 将被修改的页面标记为脏页&lt;br/&gt;Page.markDirty(true, tid)
+    BP-&gt;&gt;BP: 将脏页放入缓冲池
+    BP-&gt;&gt;BP: 将脏页 ID 放入 LRU 队列
+    BP--&gt;&gt;I: 
+    deactivate BP</code></pre>
+<h3 id="delete">Delete</h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant DF as Delete.fetchNext
+    participant BP as BufferPool
+    participant HF as HeapFile
+    participant HP as HeapPage
+    participant D as Disk
+
+    DF-&gt;&gt;BP: BufferPool.deleteTuple
+    activate BP
+    BP-&gt;&gt;BP: 根据 Tuple 的 RecordId 定位到 DbFile&lt;br/&gt;调用DbFile.deleteTuple
+    BP-&gt;&gt;HF: HeapFile.deleteTuple(TransactionId, Tuple)
+        activate HF
+        HF-&gt;&gt;HF: BufferPool.getPage&lt;br&gt;（细节见"查询元组"）
+        HF-&gt;&gt;HP: HeapPage.deleteTuple(Tuple)
+            activate HP
+            HP-&gt;&gt;HP: 1. 更新槽位&lt;br/&gt;2. 清除元组数据
+            HP--&gt;&gt;HF: 
+            deactivate HP
+        HF--&gt;&gt;BP: 返回被修改的页面 ArrayList&lt;Page&gt;
+        deactivate HF
+    BP-&gt;&gt;HP: 将被修改的页面标记为脏页&lt;br/&gt;Page.markDirty(true, tid)
+    BP-&gt;&gt;BP: 将脏页放入缓冲池
+    BP-&gt;&gt;BP: 将脏页 ID 放入 LRU 队列
+    BP--&gt;&gt;DF: 
+    deactivate BP</code></pre>
+<h3 id="select">Select</h3>
+<p>实现 LRU 页面淘汰策略。</p>
+<p>重写了 <code>getPage</code>，实现了 <code>evictPage</code>、<code>flushPage</code>、<code>flushAllPage</code>、<code>discardPage</code>。</p>
+<ul>
+<li>flushPage 刷新磁盘</li>
+<li>discardPage 只移除页面，不刷新磁盘（丢弃修改）</li>
+</ul>
+<p>其中，前三个是实现 LRU 会用到的；<code>discardPage</code> 后面的实验会用到；<code>flushAllPage</code> 测试接口，无用。</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant DL as DbFileIterator.loadNextPage
+    participant BG as BufferPool.getPage
+    participant BE as BufferPool.evictPage
+    participant BF as BufferPool.flushPage
+    participant HF as HeapFile
+    participant HP as HeapPage
+    participant D as Disk
+
+DL-&gt;&gt;BG: BufferPool.getPage
+    activate BG
+        BG-&gt;&gt;BG: 尝试从缓冲池中寻找页面
+        alt 如果缓存命中
+        BG-&gt;&gt;BG: 更新 LRU 缓存
+        BG-&gt;&gt;BG: 返回 缓冲池中的 Page
+        end
+
+        alt 如果缓冲池已满
+        BG-&gt;&gt;BE: evictPage
+            activate BE
+            BE-&gt;&gt;BE: 遍历 LRU 缓存&lt;br/&gt;找到最久未使用的页面
+            BE-&gt;&gt;BE: 移除掉最久未使用的页面，&lt;br&gt;脏页要放最后移除
+
+            BE--&gt;&gt;BG: 
+            deactivate BE
+        end
+
+        alt 如果缓存未命中
+
+        alt HeapFile.readPage
+        BG-&gt;&gt;HF: 从数据库文件读取新页面&lt;br&gt;HeapFile.readPage(PageId)
+        activate HF
+            HF-&gt;&gt;HF: 计算 Page 所在偏移量
+            HF-&gt;&gt;D: 通过 IO 流，根据 offset、pageSize&lt;br/&gt;获取 Page 所需数据（byte数组）
+            HF-&gt;&gt;HP: new HeapPage(PageId pid, byte[] data)
+            activate HP
+                HP-&gt;&gt;HP: 构造函数内部通过一系列操作&lt;br/&gt;将 byte 数组组装为 Page
+                HP--&gt;&gt;HF: return new HeapPage
+            deactivate HP
+            HF--&gt;&gt;BG: return new HeapPage
+        deactivate HF
+        end
+
+        BG-&gt;&gt;BG: 将 Page 加入缓冲池
+        BG-&gt;&gt;BG: 新增 LRU 缓存
+        end
+   BG--&gt;&gt;DL: return HeapPage
+   deactivate BG</code></pre>
+<h2 id="_2">操作符实现</h2>
+<h3 id="_3">模板方法模式</h3>
+<p><strong>UML 类图</strong></p>
+<pre class="mermaid"><code>classDiagram
+    direction TB  // 设置布局方向为从上到下
+    class OpIterator {
+        &lt;&lt;interface&gt;&gt;
+        +open()
+        +next()
+        +close()
+        +等等()
+    }
+    class SeqScan {
+    }
+    class DbFileIterator {
+    }
+    class Operator {
+        &lt;&lt;abstract&gt;&gt;
+        +abstract fetchNext()
+        +等等()
+    }
+    class Project {
+        +fetchNext()
+    }
+    class OrderBy {
+        +fetchNext()
+    }
+    class Filter {
+        +fetchNext()
+    }
+    class Join {
+        +fetchNext()
+    }
+    class Aggregate {
+        +fetchNext()
+    }
+    class Insert {
+        +fetchNext()
+    }
+    class Delete {
+        +fetchNext()
+    }
+    OpIterator &lt;.. SeqScan
+    SeqScan *-- DbFileIterator
+    OpIterator &lt;.. Operator
+    Operator &lt;|-- Project
+    Operator &lt;|-- OrderBy
+    Operator &lt;|-- Filter
+    Operator &lt;|-- Join
+    Operator &lt;|-- Aggregate
+    Operator &lt;|-- Insert
+    Operator &lt;|-- Delete
+</code></pre>
+<p>对于除 SeqScan 外的操作符，体现了模板方法模式。</p>
+<p>Operator 借助抽象方法 fetchNext，统一实现了 open next close 等各个操作符通用方法的内部逻辑。</p>
+<p>需要操作符各自实现的不同逻辑，抽象为方法 fetchNext。各个操作符继承 Operator，实现各自的 fetchNext。</p>
+<p><strong>SimpleDB 中的特殊存在</strong></p>
+<p>操作符中 SeqScan 相当于 Select，是个特例，直接实现自 OpIterator 接口。</p>
+<p>SeqScan 相当于火山模型中最原始的孩子结点，再往底层深入，就涉及到了 DbFile、DbFileIterator、BufferPool 从 HeapFile 中获取具体元组数据的逻辑。</p>
+<h3 id="filterjoin">Filter&amp;Join</h3>
+<p><strong>复习SQL</strong></p>
+<p>Filter：</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">Employees</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">Department</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;销售部&#39;</span><span class="p">;</span>
+</code></pre></div>
+<p>Join：</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">Employees</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">Departments</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">Employees</span><span class="p">.</span><span class="n">DepartmentID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Departments</span><span class="p">.</span><span class="n">ID</span><span class="p">;</span>
+</code></pre></div>
+<p><strong>涉及到的类</strong></p>
+<blockquote>
+<p><code>Predicate.Op</code></p>
+</blockquote>
+<p>内部枚举类：定义了各个比较操作符，以及操作符与可视化 SQL 字段间的映射（如 <code>=</code> 与 <code>EQUALS</code>）。</p>
+<blockquote>
+<p><code>Predicate</code> <code>JoinPredicate</code></p>
+</blockquote>
+<p>相当于流水线的质检标准，即评判是否符合条件的标准。</p>
+<p>Filter：</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">Employees</span><span class="w"> </span><span class="c1">-- child</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">Department</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;销售部&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">-- Predicate条件</span>
+</code></pre></div>
+<p>Join：</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">Employees</span><span class="w"> </span><span class="c1">-- 左表child1</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">Departments</span><span class="w"> </span><span class="c1">-- 右表child2</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">Employees</span><span class="p">.</span><span class="n">DepartmentID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Departments</span><span class="p">.</span><span class="n">ID</span><span class="p">;</span><span class="w"> </span><span class="c1">-- JoinPredicate条件</span>
+</code></pre></div>
+<blockquote>
+<p><code>IntField</code> <code>StringField</code></p>
+</blockquote>
+<p>字段类，关键是 <code>Field.compare(Predicate.Op, Field)</code> 方法，识别可视化 SQL 字段，根据类型的不同进行各自的比较。</p>
+<blockquote>
+<p><code>Filter</code> <code>Join</code></p>
+</blockquote>
+<p>操作符类，关键是实现 <code>fetchNext</code> 方法，顺利融入火山模型。</p>
+<p><strong>代码细节</strong></p>
+<p>Predicate.java 重点</p>
+<ul>
+<li>
+<p>Op 内部类：将 SQL 以字符串形式存储</p>
+</li>
+<li>
+<p>谓词三要素，构成过滤条件的基本元素</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">students</span><span class="w"> </span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span>
+<span class="w">  </span><span class="k">AND</span><span class="w"> </span><span class="n">major</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Computer Science&#39;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">// 要比较的字段位置（如 age 是表中的第x个字段）</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">field</span><span class="p">;</span>
+<span class="c1">// 比较类型（&gt;||=）</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Op</span><span class="w"> </span><span class="n">op</span><span class="p">;</span>
+<span class="c1">// 比较值（如 18 &#39;Computer Science&#39;）</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Field</span><span class="w"> </span><span class="n">operand</span><span class="p">;</span>
+</code></pre></div>
+</li>
+<li>
+<p>核心过滤方法，执行数据筛选</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="n">Tuple</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 通过 field 获取要比较的具体字段值</span>
+<span class="w">    </span><span class="n">Field</span><span class="w"> </span><span class="n">fieldValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">getField</span><span class="p">(</span><span class="n">field</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// 调用比较方法（IntField.compare(Predicate.Op, Field) 与 StringField.compare(Predicate.Op, Field)）</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">fieldValue</span><span class="p">.</span><span class="na">compare</span><span class="p">(</span><span class="n">op</span><span class="p">,</span><span class="w"> </span><span class="n">operand</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+</li>
+</ul>
+<h3 id="aggregate">Aggregate</h3>
+<p><strong>复习SQL</strong></p>
+<div class="highlight"><pre><span></span><code>| 部门(STRING) | 销售额(INT) |
+|------------|-----------|
+| 市场部      | 5000      |
+| 技术部      | 8000      |
+| 市场部      | 6000      |
+| 技术部      | 9000      |
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="err">部门</span><span class="p">,</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="err">销售额</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">表名</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="err">部门</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>|  部门      | MAX(销售额) |
+|------------|-----------|
+| 市场部      | 5000      |
+| 技术部      | 8000      |
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">IntegerAggregator</span><span class="w"> </span><span class="n">agg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IntegerAggregator</span><span class="p">(</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w">          </span><span class="c1">// 按第 0 列（部门）分组</span>
+<span class="w">    </span><span class="n">Type</span><span class="p">.</span><span class="na">STRING_TYPE</span><span class="p">,</span><span class="w"> </span><span class="c1">// 第 0 列是 String 类型 </span>
+<span class="w">    </span><span class="mi">1</span><span class="p">,</span><span class="w">          </span><span class="c1">// 聚合第 1 列（销售额）</span>
+<span class="w">    </span><span class="n">Op</span><span class="p">.</span><span class="na">MAX</span><span class="w">      </span><span class="c1">// 计算最大值</span>
+<span class="p">);</span>
+</code></pre></div>
+<p>咕咕咕（其余操作符具体实现的笔记不做了，个人认为那些细节并不是很关键）</p>
+<h2 id="_4">火山模型</h2>
+<h3 id="_5">介绍</h3>
+<p><strong>特点（重点）</strong></p>
+<ul>
+<li>迭代器模式，实现流水线式处理。</li>
+<li>惰性求值，高效利用内存。</li>
+</ul>
+<p><strong>为什么叫火山模型？</strong></p>
+<p>结合其特点：</p>
+<p>数据犹如岩浆。火山<strong>上窄下宽</strong>，底部堆积着大量数据，经过火山<strong>层层筛选与处理</strong>（流水线式处理），处理后的数据<strong>逐渐</strong>（惰性求值）从顶层流出。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>灵活：操作符的组合，调用者便于使用，开发者便于拓展。</li>
+<li>内存高效：流水线式处理，不必保存中间结果，高效利用内存。惰性求值，同样高效利用内存。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>性能开销大：频繁在上下游间调用方法。</li>
+</ul>
+<p><strong>其他实现方式</strong></p>
+<p>向量化。</p>
+<h3 id="_6">实现</h3>
+<p>SimpleDB 中的实现。以 Lab2 2.6 jointest为例。</p>
+<p><strong>解析器起始</strong></p>
+<p>对于执行链最顶层的操作符，解析器会利用迭代器模式循环调用 <code>next</code> 方法。</p>
+<pre class="mermaid"><code>graph TB
+    JO[Join.open]
+    JC[Join.close]
+    JN[Join.next]
+    JH[Join.hasNext]
+
+    JO --&gt; JH -- true --&gt; JN --&gt; JH
+    JH -- false --&gt; JC</code></pre>
+<p><strong>概览</strong></p>
+<p>数据自底向上，被筛选处理。</p>
+<pre class="mermaid"><code>graph BT
+
+    T1[table1]
+    T2[table2]
+    S1[SeqScan1.next]
+    S2[SeqScan2.next]
+    HF1[HeapFile1::DbFileIterator.next]
+    HF2[HeapFile2::DbFileIterator.next]
+    F[Filter.next]
+    JN[Join.next]
+
+    T1 --&gt; HF1 --&gt; S1 --&gt; JN
+    T2 --&gt; HF2 --&gt;S2 --&gt; F --&gt; JN</code></pre>
+<p><strong>时序图</strong></p>
+<p>偏细节。</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant M as Main
+    participant J as Join
+    participant F as Filter
+    participant S as SeqScan
+    participant DD as DbFile::DbFileIterator
+
+M-&gt;&gt;J: Join.open
+M-&gt;&gt;J: Join.next
+
+activate J
+J-&gt;&gt;F: Filter.open
+J-&gt;&gt;F: Filter.next
+
+activate F
+F-&gt;&gt;S: SeqScan.open
+F-&gt;&gt;S: SeqScan.next
+
+activate S
+DD-&gt;&gt;DD: loadNextPage&lt;br/&gt;内部调用 BufferPool.getPage()，&lt;br/&gt;从 BufferPool 中获取页面。&lt;br/&gt;借助该方法，将表的加载拆分为页面的加载。&lt;br/&gt;基于此，实现了下面的 open next 方法。
+S-&gt;&gt;DD: DbFile::DbFileIterator.open
+DD-&gt;&gt;DD: loadNextPage
+S-&gt;&gt;DD: DbFile::DbFileIterator.next
+
+activate DD
+DD-&gt;&gt;DD: loadNextPage
+DD--&gt;&gt;S: return Tuple
+deactivate DD
+
+S-&gt;&gt;DD: DbFile::DbFileIterator.close
+S--&gt;&gt;F: return Tuple
+deactivate S
+
+F-&gt;&gt;S: SeqScan.close
+F--&gt;&gt;J: return Tuple
+deactivate F
+
+J-&gt;&gt;F: Filter.close
+J--&gt;&gt;M: return Tuple
+deactivate J
+
+M-&gt;&gt;J: Join.close</code></pre>
+<p><strong>文字描述</strong></p>
+<blockquote>
+<p>存数据</p>
+</blockquote>
+<p>jointest 中，手动存入数据，将数据文件与数据库关联起来。</p>
+<p>硬盘上已经存在 file.dat 文件。</p>
+<p>将其初始化为 HeapFile，然后将 HeapFile 加入 DataBase 存储 DbFile 的 Map 中。</p>
+<p>自此数据库中多了两张可以使用的表。</p>
+<blockquote>
+<p>火山底</p>
+</blockquote>
+<p>SeqScan 本身就是最原始的孩子节点，最初的 <code>next</code> 通过一系列流程从缓冲池中获取原始数据。</p>
+<p>获取原始数据流程：</p>
+<p><code>SeqScan.next</code> -&gt; <code>HeapFile.iterator</code> -&gt; <code>DbFileIterator.next</code> -&gt; <code>DbFileIterator.loadNextPage</code> -&gt; <code>BufferPool.getPage</code></p>
+<blockquote>
+<p>火山中部流水线</p>
+</blockquote>
+<p>Filter 就有了孩子节点的概念，需要从 <code>child.next</code> 返回的数据中，筛选或处理出满足要求的节点。</p>
+<p>Filter 是一个孩子节点的父节点，也是另一个父节点的孩子节点。</p>
+<blockquote>
+<p>火山口</p>
+</blockquote>
+<p>最顶层操作符 Join 循环打印 Join.next 返回的 Tuple 元组。</p>
+<h2 id="_7">其他</h2>
+<p>看懂 2.6 中 jointest 类的代码，基本就能理解 SQL 操作符组合的实现原理，即火山模型。</p>
+<p><strong>脏页</strong></p>
+<p>脏页是指内存中的数据页已经被修改过，但还没有将修改写回磁盘。</p>
+<p>现在看来，很多东西是互通的，比如数据库、操作系统、JVM 中都有类似脏页的概念。</p>
+<p><strong>小bug</strong></p>
+<p>自己用的 java 21 与 ant 1.10.15 有兼容性问题，导致 ant 无法编译通过 Java 14 支持的新语法，改回旧语法即可。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Java 14 新语法</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">PageId</span><span class="w"> </span><span class="n">pi</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">// Java 8 兼容的旧语法</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">PageId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">PageId</span><span class="w"> </span><span class="n">pi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">PageId</span><span class="p">)</span><span class="w"> </span><span class="n">o</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>半天没检索出来是因为自己忽视了 ant 的报错。命令行上运行 java 程序，需要先使用 ant/maven 等编译工具，将 java 代码编译为可执行文件。IDEA 用多后，自己忽视了最基本的东西。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":["announce.dismiss","content.action.edit","content.action.view","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","header.autohide","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight"],"search":"../../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"已复制","clipboard.copy":"复制","search.result.more.one":"在该页上还有 1 个符合条件的结果","search.result.more.other":"在该页上还有 # 个符合条件的结果","search.result.none":"没有找到符合条件的结果","search.result.one":"找到 1 个符合条件的结果","search.result.other":"# 个符合条件的结果","search.result.placeholder":"键入以开始搜索","search.result.term.missing":"缺少","select.version":"选择当前版本"},"version":null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.91a19a9e.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

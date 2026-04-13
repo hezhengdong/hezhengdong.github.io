@@ -1,0 +1,2239 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="hzd's notes">
+      
+      
+        <meta name="author" content="hzd">
+      
+      
+        <link rel="canonical" href="https://hezhengdong.github.io/sys/time-clocks-paper-reading/">
+      
+      
+        <link rel="prev" href="../mit-65840/lab5-sharded-kvstore/">
+      
+      
+        <link rel="next" href="../mit-6830/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/book.png">
+      <meta name="generator" content="zensical-0.0.32">
+    
+    
+      
+        <title>论文阅读 Time-Clocks - hzd's notes</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.53a7feaf.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="导航栏"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#time-clocks" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="hzd&#x27;s notes" class="md-header__button md-logo" aria-label="hzd's notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="导航栏">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            hzd's notes
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              论文阅读 Time-Clocks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="none" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="查找">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="查找">
+  <button type="button" class="md-search__button">
+    查找
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/hezhengdong/hezhengdong.github.io" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="hzd&#x27;s notes" class="md-nav__button md-logo" aria-label="hzd's notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    hzd's notes
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/hezhengdong/hezhengdong.github.io" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SYS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SYS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_1" id="__nav_1_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIT 6.5840 Lab 记录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    MIT 6.5840 Lab 记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-65840/lab1-mapreduce/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab1 MapReduce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-65840/lab2-kvstore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab2 Key/Value Server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-65840/lab3a-leader-election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab3A Leader Election
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-65840/lab3b-log/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab3B Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-65840/lab3-raft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab3 Raft
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-65840/lab4-fault-tolerant-kvstore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab4 Fault-tolerant Key/Value Service
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-65840/lab5-sharded-kvstore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab5 Sharded Key/Value Service
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文阅读 Time-Clocks
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文阅读 Time-Clocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        偏序关系
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="偏序关系">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么分布式系统中无法根据本地时钟定义事件顺序？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何定义事件间的偏序关系？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        相对论的启发
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        逻辑时钟
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="逻辑时钟">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为系统引入时钟、时钟函数、时钟条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        时钟条件的基础假设
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何实现时钟条件的基础假设
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完全排序
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="完全排序">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何构建全序关系？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        全局排序的作用：以分布式互斥算法为例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        异常行为
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        物理时钟
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="物理时钟">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        物理时钟的基础假设
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何保证“必然因果关联”的正确性？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何缩小同步精度：物理时钟同步算法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        性能度量：计算同步精度上界
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        重点梳理
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        其他
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../mit-6830/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MIT 6.830 Lab 记录
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1_3" id="__nav_1_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    MIT 6.830 Lab 记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-6830/lab1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab1 基本组件与位图管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-6830/lab2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab2 火山模型与LRU-K
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-6830/lab3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab3 Join成本估算与System-R优化器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-6830/lab4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab4 两阶段锁与死锁检测
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-6830/lab5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab5 B+树索引实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mit-6830/lab6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lab6 ARIES恢复算法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lru-k-paper-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文阅读 LRU-K
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DEV
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DEV
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消息推送平台
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    消息推送平台
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%8E%A5%E5%85%A5%E5%B1%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    接入层
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消息队列
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E8%B4%B9%E5%B1%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    消费层
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    定时任务
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    链路追踪
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ETC
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ETC
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai/2025-the-year-in-llms-reading-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2025: The year in LLMs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai/rag-learning-note/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG 学习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C 语言复习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        偏序关系
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="偏序关系">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么分布式系统中无法根据本地时钟定义事件顺序？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何定义事件间的偏序关系？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        相对论的启发
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        逻辑时钟
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="逻辑时钟">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为系统引入时钟、时钟函数、时钟条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        时钟条件的基础假设
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何实现时钟条件的基础假设
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        完全排序
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="完全排序">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何构建全序关系？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        全局排序的作用：以分布式互斥算法为例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        异常行为
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        物理时钟
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="物理时钟">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        物理时钟的基础假设
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何保证“必然因果关联”的正确性？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        如何缩小同步精度：物理时钟同步算法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        性能度量：计算同步精度上界
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        重点梳理
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        其他
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="导航栏" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Index
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../mit-65840/lab1-mapreduce/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    SYS
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+    <a href="https://github.com/hezhengdong/hezhengdong.github.io/edit/master/docs/sys/time-clocks-paper-reading.md" title="编辑此页" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/hezhengdong/hezhengdong.github.io/raw/master/docs/sys/time-clocks-paper-reading.md" title="查看本页的源代码" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-code-2" viewBox="0 0 24 24"><path d="M4 12.15V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2h-3.35"/><path d="M14 2v5a1 1 0 0 0 1 1h5M5 16l-3 3 3 3M9 22l3-3-3-3"/></svg>
+    </a>
+  
+
+
+<h1 id="time-clocks">论文阅读 Time-Clocks</h1>
+<blockquote>
+<p>论文全称为 "Time, Clocks, and the Ordering of Events in a Distributed System"</p>
+<p>阅读论文的起因：阅读 Raft 论文时，第二节讲述了共识算法的特性，其中一个特性是：“它们不依赖于时间来确保日志的一致性”。无法理解这句话，所以来阅读这篇论文。</p>
+</blockquote>
+<h2 id="_1">偏序关系</h2>
+<h3 id="_2">为什么分布式系统中无法根据本地时钟定义事件顺序？</h3>
+<p>如果事件 a 发生的时间早于事件 b，那么事件 a 就发生在事件 b 之前。这句话的前提是事件 a、b 基于同一个时钟。</p>
+<p>分布式系统中，不同节点上时钟的时间并不相同，所以无法根据本地时钟定义事件顺序。</p>
+<h3 id="_3">如何定义事件间的偏序关系？</h3>
+<p>“偏序”意为“部分顺序”，本节并没有追求定义所有事件的顺序，而是讲解了如何定义存在因果关系的事件顺序。</p>
+<p>如果事件 a 与事件 b 存在因果关系，那么将事件 a、b 的关系称之为 “Happened Before” 关系，a happened before b，使用 <span class="arithmatex">\(a \to b\)</span> 表示。</p>
+<p>判断两事件是否为 “Happened Before” 关系的定义：</p>
+<ol>
+<li>如果 a、b 是同一进程中的事件，且 a 在 b 之前发生，则 <span class="arithmatex">\(a \to b\)</span>。</li>
+<li>如果 a 是一个进程发送消息的事件，b 是另一个进程接收消息的事件，则 <span class="arithmatex">\(a \to b\)</span>。</li>
+<li>如果 <span class="arithmatex">\(a \to b、b \to c\)</span>，则 <span class="arithmatex">\(a \to c\)</span>。</li>
+</ol>
+<p>此外，如果 <span class="arithmatex">\(a \nrightarrow b\)</span> 且 <span class="arithmatex">\(b \nrightarrow a\)</span>，说明 a、b 间是并发关系。</p>
+<h3 id="_4">相对论的启发</h3>
+<p>作者说创作这篇论文是受到了狭义相对论的启发。个人认为“狭义相对论”这种表述过于粗略，容易造成误解。更易理解的说法应当是：受到了光速不变原理的启发。</p>
+<p>“相对性”是显而易见的基本原理。例如在一条线上等距离的 a、b、c、d 四个位置，a、d 同时发生了一件事，b、c 分别站着两个人，b 会认为事件顺序是 a 先于 d 发生，c 会认为事件顺序是 d 先于 a 发生。</p>
+<p>“光速不变”意味着这种不一致的问题不可能被避免，思考避免该问题是徒劳的，应当思考如何解决它。这是我阅读论文后认为的作者所说的“启发”。</p>
+<h2 id="_5">逻辑时钟</h2>
+<h3 id="_6">为系统引入时钟、时钟函数、时钟条件</h3>
+<p>时钟：从抽象的角度来看，时钟只是给事件分配一个数字的一种方式。基于上一节的论述，定义事件顺序无法使用本地物理时钟，所以需要自定义基于因果关系的逻辑时钟。</p>
+<p>时钟函数：假如每个进程 <span class="arithmatex">\(P_i\)</span> 维护一个逻辑时钟 <span class="arithmatex">\(C_i\)</span>，<span class="arithmatex">\(C_i\)</span> 就是一个函数，为进程中的事件 a 分配一个整数值 <span class="arithmatex">\(C_i(a)\)</span>。</p>
+<p>时钟条件：如果 <span class="arithmatex">\(a \to b\)</span>，则 <span class="arithmatex">\(C(a) &lt; C(b)\)</span>。时钟条件定义了时钟的正确性，每个逻辑时钟必须满足该条件。</p>
+<h3 id="_7">时钟条件的基础假设</h3>
+<p>根据 “Happened Before” 关系，为了使时钟条件成立，需要满足以下两个基本假设：</p>
+<ol>
+<li>若 a 和 b 是进程 <span class="arithmatex">\(P_i\)</span> 中的事件，且 a 发生在 b 之前，则 <span class="arithmatex">\(C_i(a) &lt; C_i(b)\)</span>。</li>
+<li>如果 a 为进程 <span class="arithmatex">\(P_i\)</span> 发送消息的操作，b 为进程 <span class="arithmatex">\(P_j\)</span> 接收消息的操作，则 <span class="arithmatex">\(C_i(a) &lt; C_j(b)\)</span>。</li>
+</ol>
+<h3 id="_8">如何实现时钟条件的基础假设</h3>
+<p>实现时钟条件的基础假设，需要使进程遵循以下两个规则：</p>
+<ul>
+<li>IR1：每个进程在发生两个连续事件之间，递增逻辑时钟。</li>
+<li>IR2：当进程 <span class="arithmatex">\(P_i\)</span> 发送消息时，需要将当前逻辑时钟时间戳 <span class="arithmatex">\(T_m\)</span> 附着在消息上。当进程 <span class="arithmatex">\(P_j\)</span> 接收到消息时，需要将自己的逻辑时钟调整为大于 <span class="arithmatex">\(T_m\)</span>。（论文中所说的时间戳 timestamp 是逻辑时钟的计数器，与物理时钟无关。）</li>
+</ul>
+<p>举例解释 IR2：假如进程 <span class="arithmatex">\(P_i\)</span>、<span class="arithmatex">\(P_j\)</span> 分别发生了三个事件 a、b、c，时间戳由进程 ID 与递增数字组成。<span class="arithmatex">\(C_i(a) =  i\_1\)</span>，<span class="arithmatex">\(C_j(a) = j\_1\)</span>。如果 <span class="arithmatex">\(P_i\ b \to P_j\ b\)</span>，且 <span class="arithmatex">\(C_i(b) = i\_2\)</span>，则 <span class="arithmatex">\(C_j(b)\)</span> 中的递增数字必须大于 2，例如 <span class="arithmatex">\(C_j(b) = j\_3\)</span>。</p>
+<h2 id="_9">完全排序</h2>
+<h3 id="_10">如何构建全序关系？</h3>
+<p>很简单，基于偏序关系，对并发事件按照统一的规则排序，例如按照进程 ID 排序。</p>
+<h3 id="_11">全局排序的作用：以分布式互斥算法为例</h3>
+<p>分布式互斥问题，与并发问题类似，不过引起并发的原因由单机多线程变为了多机单进程。最常见的解决方案是集中式的 Redis 的分布式锁。论文提供了分布式的解决方案。</p>
+<p>分布式互斥算法的实现：</p>
+<ul>
+<li>每个进程维护一个队列，以时间戳为序。</li>
+<li>进程 <span class="arithmatex">\(P_i\)</span> 请求资源时，<span class="arithmatex">\(P_i\)</span> 向其他进程发送请求消息。</li>
+<li>进程 <span class="arithmatex">\(P_j\)</span> 收到消息后：<ul>
+<li>如果 <span class="arithmatex">\(P_j\)</span> 已经请求到了资源，不回复确认；</li>
+<li>如果 <span class="arithmatex">\(P_j\)</span> 正在请求资源，对比二者时间戳，小者获胜；</li>
+<li>如果 <span class="arithmatex">\(P_j\)</span> 没有请求资源，回复确认。</li>
+</ul>
+</li>
+<li>如果进程 <span class="arithmatex">\(P_i\)</span> 收到了所有节点的确认消息，且 <span class="arithmatex">\(P_i\)</span> 的请求消息在本地队列的最前方，则请求资源，否则阻塞等待。</li>
+</ul>
+<p>正是因为有了全序关系，得以实现该分布式算法。该思想也可拓展至分布式系统中的任意同步问题。</p>
+<h2 id="_12">异常行为</h2>
+<blockquote>
+<p>设想一个全国性的计算机互联系统。假设一个人在计算机 A 上发出请求 A，然后打电话给另一个城市的友人，让他在另一台计算机 B 上发出请求 B。请求 B 很有可能会获得更低的时间戳，并被安排在请求 A 之前。这种情况之所以会发生，是因为系统无法得知 A 实际上先于 B 发出，因为这种先后顺序信息是基于系统外部的消息。</p>
+</blockquote>
+<p>问题的根源：系统只能感知内部事件，无法捕捉外部事件的因果关系。</p>
+<p>解决方案：</p>
+<ol>
+<li>将避免异常行为的责任交给用户。</li>
+<li>构建一个物理时钟系统，满足强时钟条件：对于物理时空的任何事件，如果 <span class="arithmatex">\(a \to b\)</span>，则 <span class="arithmatex">\(C(a) &lt; C(b)\)</span>。<ul>
+<li>其中 <span class="arithmatex">\(\to\)</span> 指的是狭义相对论定义的事件顺序。</li>
+</ul>
+</li>
+</ol>
+<h2 id="_13">物理时钟</h2>
+<p>兜兜转转又回到了物理时钟。物理时钟不准确，逻辑时钟无法顾及系统外因果关联。那就构建一个物理时钟同步系统，使分布式系统中所有机器上的物理时钟尽可能接近。既能确保“必然有因果关联”的事件顺序正确，又能确保“可能有因果关联”的事件顺序在一定误差之内。</p>
+<h3 id="_14">物理时钟的基础假设</h3>
+<p><strong>PC1</strong>：存在一个常数 <span class="arithmatex">\(\kappa\ll 1\)</span>，使得对于所有 <span class="arithmatex">\(i\)</span>：<span class="arithmatex">\(\left|\frac{d C_{i}(t)}{dt} - 1\right|&lt;\kappa\)</span>。</p>
+<p>参数解释：</p>
+<ul>
+<li>t 指的是理想、绝对的时间标准。</li>
+<li><span class="arithmatex">\(C_i(t)\)</span> 是一个函数，指的是在绝对物理时间 t 这一刻，进程 <span class="arithmatex">\(P_i\)</span> 本地时钟的时间。</li>
+<li><span class="arithmatex">\(\kappa\)</span> 是时钟的最大漂移速率。</li>
+</ul>
+<p>条件含义：该条件用于描述单个物理时钟的精确性，因为任何物理时钟必然会产生漂移。</p>
+<p>例如对于典型的晶体控制时钟，<span class="arithmatex">\(\kappa \le 10^{-6}\)</span></p>
+<p><strong>PC2</strong>：对于所有 i、j：<span class="arithmatex">\(\left|C_i(t)-C_j(t)\right|&lt;\epsilon\)</span>。</p>
+<p>参数解释：</p>
+<ul>
+<li><span class="arithmatex">\(\epsilon\)</span> 是同步精度的上限。</li>
+</ul>
+<p>条件含义：因为不同时钟漂移率不同，所以还需要描述多个时钟间的同步精度。</p>
+<h3 id="_15">如何保证“必然因果关联”的正确性？</h3>
+<p>本段与偏序关系解决的是一个问题，“如何保证有因果关联的事件顺序”。不同之处在于本段基于物理时钟实现。</p>
+<p><strong>基本条件</strong>：如果 <span class="arithmatex">\(a \to b\)</span>，则 <span class="arithmatex">\(C_i(a) &gt; C_j(b)\)</span>。</p>
+<p>假设一个数 <span class="arithmatex">\(\mu\)</span>，事件 a 发生在物理时间 t，且另一个进程中的事件 b 满足 <span class="arithmatex">\(a \to b\)</span>，则 b 一定发生在 <span class="arithmatex">\(t + \mu\)</span> 之后。根据该假设，<span class="arithmatex">\(\mu\)</span> 即为进程间传输延迟的已知最小值。</p>
+<p>要避免因果倒置的异常行为，必须满足：</p>
+<div class="arithmatex">\[
+C_i(t + \mu) - C_j(t) &gt; 0
+\]</div>
+<p><strong>数学推导</strong>：</p>
+<ul>
+<li>根据 PC1 可知，时钟 i 从时间 t 到 <span class="arithmatex">\(t + \mu\)</span> 的增量至少为 <span class="arithmatex">\((1 - \kappa) \mu\)</span>，即：</li>
+</ul>
+<div class="arithmatex">\[
+C_i(t + \mu) - C_i(t) &gt; (1 - \kappa) \mu
+\]</div>
+<ul>
+<li>根据 PC2 可知，在时间 t，时钟 i 和 j 的读数相差小于 <span class="arithmatex">\(\epsilon\)</span>，即：</li>
+</ul>
+<div class="arithmatex">\[
+C_j(t) &lt; C_i(t) + \epsilon
+\]</div>
+<ul>
+<li>将三个公式关联：</li>
+</ul>
+<div class="arithmatex">\[
+C_i(t + \mu) - C_j(t) &gt; [C_i(t) + (1 - \kappa) \mu] - [C_i(t) + \epsilon] = (1 - \kappa) \mu - \epsilon &gt; 0
+\]</div>
+<ul>
+<li>解得：</li>
+</ul>
+<div class="arithmatex">\[
+\frac{\epsilon}{1 - \kappa} \leq \mu
+\]</div>
+<p><strong>结论</strong>：分布式系统中，不同进程的时钟满足 <span class="arithmatex">\(\frac{\epsilon}{1 - \kappa} \leq \mu\)</span>，即可确保有着因果关联的事件顺序正确。</p>
+<p><strong>更易于理解的解释</strong>：</p>
+<p>对于 <span class="arithmatex">\(\frac{\epsilon}{1 - \kappa} \leq \mu\)</span> ，其中 <span class="arithmatex">\(\kappa \ll 1\)</span>、<span class="arithmatex">\(1-\kappa \approx 1\)</span>，因此公式可近似为 <span class="arithmatex">\(\epsilon \leq \mu\)</span>。</p>
+<p>基于简化后的公式，理解的重点变为：为什么时钟间的同步精度差异 &lt;= 进程间的最短延迟，即可确保有着因果关联的事件顺序正确？</p>
+<p>假如事件 a 为进程 <span class="arithmatex">\(P_i\)</span> 发送信息，事件 b 为进程 <span class="arithmatex">\(P_j\)</span> 接收信息。考虑误差最大的情况，<span class="arithmatex">\(C_i(t) = t + \epsilon\)</span>，<span class="arithmatex">\(C_j(t) = t\)</span>，使用同步算法后，<span class="arithmatex">\(C_j(t + \nu) = t + \mu\)</span>（<span class="arithmatex">\(\nu\)</span> 为实际延迟）。事件 a 的时间戳为 <span class="arithmatex">\(t + \epsilon\)</span>，事件 b 的时间戳为 <span class="arithmatex">\(t + \mu\)</span>。由于 <span class="arithmatex">\(a \to b\)</span>，所以必然会有 <span class="arithmatex">\(\mu \ge \epsilon\)</span>。</p>
+<h3 id="_16">如何缩小同步精度：物理时钟同步算法</h3>
+<p>时钟的漂移率 <span class="arithmatex">\(\kappa\)</span> 存在差异，会导致同步精度 <span class="arithmatex">\(\epsilon\)</span> 逐渐变大，因此需要一个算法来同步时钟以维持 <span class="arithmatex">\(\epsilon\)</span>。</p>
+<p>论文给出的物理时钟同步算法，实际是使进程遵循以下两个规则（基于实现逻辑时钟的两个规则而来）：</p>
+<ul>
+<li>IR1'：在进程 <span class="arithmatex">\(P_i\)</span> 未收到消息时，其时钟不断前进。</li>
+<li>IR2'：<ul>
+<li>(a) 当进程 <span class="arithmatex">\(P_i\)</span> 在时间 t 发送消息 m 时，需附带时间戳 <span class="arithmatex">\(T_m = C_i(t)\)</span>。</li>
+<li>(b) 当进程 <span class="arithmatex">\(P_j\)</span> 在时间 t' 收到该消息时，它必须将本地时钟调整为：</li>
+</ul>
+</li>
+</ul>
+<div class="arithmatex">\[
+C_j(t') = max(C_j(t' - 0), T_m + \mu_m)
+\]</div>
+<p>对 IR2' 的解释：</p>
+<ul>
+<li>参数解释：<ul>
+<li><span class="arithmatex">\(C_j(t'-0)\)</span>：<span class="arithmatex">\(P_j\)</span> 收到消息前一刻的本地时钟值。</li>
+<li><span class="arithmatex">\(\mu_m\)</span>：消息 m 传输延迟的已知最小估计值。</li>
+</ul>
+</li>
+<li>公式解释：<ul>
+<li>假设对于进程 <span class="arithmatex">\(P_i\)</span>、<span class="arithmatex">\(P_j\)</span>，两进程间存在 <span class="arithmatex">\(a \to b\)</span>，实际传输延迟为 <span class="arithmatex">\(\nu\)</span>，<span class="arithmatex">\(C_i(t) = t + \epsilon\)</span>，<span class="arithmatex">\(C_j(t + \nu) = t + \mu\)</span>。易得 <span class="arithmatex">\(C_i(a) = t + \epsilon\)</span>，<span class="arithmatex">\(C_j(b) = t + \mu\)</span>。根据上一章节可知，系统需要保证 <span class="arithmatex">\(\epsilon \leq \mu\)</span>。所以 <span class="arithmatex">\(C_i(a) \leq C_j(b)\)</span>，因果关系正确。</li>
+</ul>
+</li>
+</ul>
+<h3 id="_17">性能度量：计算同步精度上界</h3>
+<p><strong>结论</strong></p>
+<div class="arithmatex">\[
+\epsilon \lesssim d(2\kappa\tau + \xi)
+\]</div>
+<p><strong>参数解释</strong></p>
+<ul>
+<li><span class="arithmatex">\(d\)</span>：有向图的直径。表示“任意两个节点之间的最短通信路径所构成的集合”中的最大值。在分布式系统中，表示最坏情况下，进程间消息传递需要经过的节点数。在时钟同步中，意味着事件从出发到接收的过程中，需要经历的时钟同步次数。</li>
+<li><span class="arithmatex">\(\kappa\)</span>：时钟漂移率。</li>
+<li><span class="arithmatex">\(\tau\)</span>：同步消息间隔。分布式系统中，每隔一段时间，由于时钟漂移，时钟间会逐步产生误差。所以需要定时进行时钟同步。</li>
+<li><span class="arithmatex">\(\xi\)</span>：消息的不可预测延迟。消息最大实际延迟 <span class="arithmatex">\(\nu_m\)</span> 减去延迟最小估计 <span class="arithmatex">\(\mu_m\)</span>，即 <span class="arithmatex">\(\xi_m = \nu_m - \mu_m\)</span>。计算同步精度上限，网络的不确定性不可忽视。</li>
+</ul>
+<p><strong>公式解释</strong></p>
+<p>假设相邻进程同步，<span class="arithmatex">\(P_i\)</span> 需要发送一条同步消息给 <span class="arithmatex">\(P_j\)</span>，所有可能的误差如下：</p>
+<ul>
+<li>上一次同步距本次同步的误差 <span class="arithmatex">\(\kappa \tau\)</span></li>
+<li>本次同步可能产生的网络延迟 <span class="arithmatex">\(\xi\)</span></li>
+<li>本次同步后，距下一次同步的误差 <span class="arithmatex">\(\kappa \tau\)</span></li>
+<li>总误差为 <span class="arithmatex">\(2 \kappa \tau + \xi\)</span></li>
+</ul>
+<p>最大误差为系统中相距最远的进程间的误差，即有向图的直径两端。</p>
+<p>多次同步累计，总误差为 <span class="arithmatex">\(d(2\kappa\tau + \xi)\)</span>，由此得出同步精度的上界。</p>
+<p>（作者在附录中给出的公式证明过于复杂，我给略过了。）</p>
+<h2 id="_18">重点梳理</h2>
+<p>分布式系统中，两个事件间的关联分为三种情况：必然有因果关联、可能有因果关联、必然无因果关联。</p>
+<p><strong>逻辑时钟与物理时钟</strong></p>
+<p>对于逻辑时钟，只关心事件的因果顺序。对于系统内并发的事件，按照任意规则确保事件顺序唯一即可，并不关系并发事件在物理时空中顺序。</p>
+<p>对于物理时钟同步系统，根本目的是使分布式系统中所有机器上的物理时钟尽可能接近，为每个事件分配一个全局的、有意义的时间戳。</p>
+<p><strong>三种情况</strong></p>
+<p>必然有因果关联：
+- 对逻辑时钟来说，体现为两事件的“Happened Before”关系。
+- 对物理时钟来说，体现为时钟同步系统是否能够满足 <span class="arithmatex">\(\frac{\epsilon}{1 - \kappa} \leq \mu\)</span>。</p>
+<p>可能有因果关联：
+- 对逻辑时钟来说，完全无法感知事件在系统外可能产生的因果关联。
+- 对物理时钟来说，通过同步系统，能够将不同机器时钟分配的时间戳控制在一定误差之内。
+    - 如果两事件发生的时间差小于误差，那么两事件时间戳的大小无法确定，导致无法确保两事件最终顺序的正确性。
+    - 如果两事件发生的时间差大于误差，那么两事件时间戳的大小能够确定，时间戳的顺序即为事件在物理时空中的因果顺序。</p>
+<p>必然无因果关联：由狭义相对论给出，如果两个事件是“类空事件”，那么判断两个事件的发生顺序是没有意义的。</p>
+<h2 id="_19">其他</h2>
+<p>阅读论文过程中，对分布式系统与狭义相对论关联的思考。</p>
+<blockquote>
+<p>记录自己的思考，很混乱，AI 总结：作者从论文中“受狭义相对论启发”的表述切入，认为“光速不变原理”是更精准的启发来源。他通过具体示例阐释“同时的相对性”如何类比分布式系统中的事件顺序问题，并区分了相对论中与论文相关和无关的部分。最后，他反思了专业细分知识体系在带来效率的同时，也可能限制了跨学科的联想能力。</p>
+</blockquote>
+<p>接着【相对论的启发】章节讲述。</p>
+<p>作者说收到了狭义相对论的启发，<strong>更精准的说法</strong>：受到了狭义相对论中：由 “光速不变原理” 得到的 “同时的相对性” 推论的启发。</p>
+<p><strong>对 “同时的相对性” 的解释</strong>：意思是同时发生的两个事件，根据观察者的不同，两个事件发生的顺序也会不同，且不可能避免，不可能存在一个全局顺序。</p>
+<p><strong>狭义相对论下如何判断“两件事的因果顺序” &amp;&amp; 狭义相对论与分布式系统的关联</strong>：上面我的 a b c d 示例解释的很清楚了。“光锥”这一概念是对狭义相对论中“两个事件因果顺序”的可视化解释：只有一件事发生在另一件事的光锥内，才能说明两件事之间有因果关联；否则两件事的发生顺序完全无法判断，不同的观察者会有不同的结论，导致“同时的相对性”。<strong>类似这篇论文中所说的“并发”。</strong></p>
+<p><strong>经典的“火车闪电思想实验”也是对“同时的相对性”的解释</strong>：火车头尾同时发生闪电，对于坐在火车中间的人来说，两次闪电有先后顺序，对于恰好在火车中点外静止的人来说，两次闪电同时发生。同时发生的两件事，不同位置的人观察到了不同的现象。（没有系统性的学习过这部分知识，导致自己刚开始完全不理解这个思想实验和狭义相对论有什么关系。）</p>
+<p><strong>我认为的狭义相对论最有趣的部分</strong>：基于光速不变原理和相对性原理，揭示了空间与时间的关联：“在同一个惯性参考系下，空间速度与时间流速成反比关系”。并以此得出很多有趣的推论，如“时间膨胀”、“长度收缩”、“质能等价”、“相对性质量”等。</p>
+<p><strong>记录上一段话的原因</strong>：这是我刚见到狭义相对论，联想到的部分。这些东西显然和这篇论文没什么关系，导致我产生了误解。思考并梳理了以上文字，记录下来。</p>
+<p>思考链路：</p>
+<ul>
+<li>不理解分布式系统跟狭义相对论有什么关系，不就是光速不变导致一致性问题无法避免吗。</li>
+<li>复习了一遍“我认为的狭义相对论”：空间速度与时间流速成反比。</li>
+<li>复习过程中看到了“火车闪电思想实验”，不理解这个实验和狭义相对论有什么关系。</li>
+<li>总结了自己的疑惑，让 AI 解答。AI 回复说“同时的相对性”是狭义相对论根据“光速不变”的重要推论，我把狭义相对论的两个结论分离开了，实际上二者都属于狭义相对论。</li>
+<li>顿悟，梳理文字。</li>
+</ul>
+<p>反思：回顾思考链路，感觉自己把“同时的相对性”推导了一遍，然后 AI 告诉我这是现有的科学结论。如果我是物理系学生，这些内容一定会被系统的学习过，但是不会留下深刻印象。我是计算机系学生，没有系统学习过这些内容，导致自己花了很多时间思考、梳理。这是专业细分的好处还是坏处？以更高的效率牺牲了一部分联想功能。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.action.view","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","header.autohide","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"已复制","clipboard.copy":"复制","search.result.more.one":"在该页上还有 1 个符合条件的结果","search.result.more.other":"在该页上还有 # 个符合条件的结果","search.result.none":"没有找到符合条件的结果","search.result.one":"找到 1 个符合条件的结果","search.result.other":"# 个符合条件的结果","search.result.placeholder":"键入以开始搜索","search.result.term.missing":"缺少","select.version":"选择当前版本"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.91a19a9e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
