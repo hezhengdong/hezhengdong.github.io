@@ -20,6 +20,7 @@ Grok 说，只要 nav 里不写首页就行了。
 - [x] 搭建 github actions，实现自动 CICD（系统自带）
 - [x] 需成功部署至页面，github.io 成功访问到文档
 - [x] 添加评论系统（顺带隐藏了脚注）
+- [x] 同步到 cloudflare pages 中，否则不开梯子无法访问（本来打算同步到 netlify 的，发现 netlify 已经被墙了）
 
 
 灵感来源：

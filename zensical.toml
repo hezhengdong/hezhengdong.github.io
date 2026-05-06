@@ -78,6 +78,7 @@ nav = [
     ]}
   ]},
   {"ETC" = [
+    "etc/proxy-cloud-database-conflict.md",
     "ai/2025-the-year-in-llms-reading-note.md",
     "ai/rag-learning-note.md",
     "sys/c-review.md",
