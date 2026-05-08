@@ -12,13 +12,13 @@
         <meta name="author" content="hzd">
       
       
-        <link rel="canonical" href="https://hezhengdong.github.io/ai/2025-the-year-in-llms-reading-note/">
+        <link rel="canonical" href="https://hezhengdong.github.io/dev/maven-multi-module/">
       
       
-        <link rel="prev" href="../../etc/proxy-cloud-database-conflict/">
+        <link rel="prev" href="../../sys/lru-k-paper-reading/">
       
       
-        <link rel="next" href="../rag-learning-note/">
+        <link rel="next" href="../%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>2025: The year in LLMs - hzd's notes</title>
+        <title>Maven 多模块与依赖管理 - hzd's notes</title>
       
     
     
@@ -85,7 +85,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#2025-the-year-in-llms" class="md-skip">
+        <a href="#maven" class="md-skip">
           跳转至
         </a>
       
@@ -121,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              2025: The year in LLMs
+              Maven 多模块与依赖管理
             
           </span>
         </div>
@@ -883,8 +883,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -901,11 +903,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
@@ -926,7 +928,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -941,10 +943,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../dev/maven-multi-module/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven 多模块与依赖管理
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -960,6 +989,221 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#maven-jar-hell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、没有 Maven 的时候——Jar Hell
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、继承（parent）——"版本号只写一次"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、继承（parent）——&quot;版本号只写一次&quot;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        问题
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parent_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        解决方案：parent 继承
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependencymanagement-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键认知：dependencyManagement ≠ dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parent_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parent 只能有一个
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、聚合（modules）——"一行命令构建全部"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、聚合（modules）——&quot;一行命令构建全部&quot;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        问题
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modules_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        解决方案：modules 聚合
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#packagingpom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        packaging=pom 是什么意思？
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spring-boot-pom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        四、Spring Boot 的父 POM——官方替你管好了
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="四、Spring Boot 的父 POM——官方替你管好了">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        问题
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-boot-starter-parent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        解决方案：spring-boot-starter-parent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所以你在子模块里写依赖几乎不用管版本号
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        加新依赖时的判断流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        五、总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1002,7 +1246,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/" class="md-nav__link ">
+            <a href="../%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/" class="md-nav__link ">
               
   
   
@@ -1046,7 +1290,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%8E%A5%E5%85%A5%E5%B1%82/" class="md-nav__link">
+      <a href="../%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%8E%A5%E5%85%A5%E5%B1%82/" class="md-nav__link">
         
   
   
@@ -1074,7 +1318,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="md-nav__link">
+      <a href="../%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="md-nav__link">
         
   
   
@@ -1102,7 +1346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E8%B4%B9%E5%B1%82/" class="md-nav__link">
+      <a href="../%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E8%B4%B9%E5%B1%82/" class="md-nav__link">
         
   
   
@@ -1130,7 +1374,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" class="md-nav__link">
+      <a href="../%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" class="md-nav__link">
         
   
   
@@ -1158,7 +1402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" class="md-nav__link">
+      <a href="../%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" class="md-nav__link">
         
   
   
@@ -1198,10 +1442,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1222,11 +1464,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -1247,7 +1489,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1290,37 +1532,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    2025: The year in LLMs
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../ai/2025-the-year-in-llms-reading-note/" class="md-nav__link">
         
   
   
@@ -1336,104 +1551,6 @@
   
 
       </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        推理之年
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        智能体之年
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#claude-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        编码智能体和 Claude Code 之年
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#llms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        命令行 LLMs 之年
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#gemini" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Gemini 之年
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mcp" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        MCP 之年（唯一一年？）
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        后记
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1446,7 +1563,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rag-learning-note/" class="md-nav__link">
+      <a href="../../ai/rag-learning-note/" class="md-nav__link">
         
   
   
@@ -1543,76 +1660,193 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#maven-jar-hell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一、没有 Maven 的时候——Jar Hell
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        二、继承（parent）——"版本号只写一次"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、继承（parent）——&quot;版本号只写一次&quot;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        推理之年
+        问题
       
     </span>
   </a>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#parent_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        解决方案：parent 继承
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependencymanagement-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        关键认知：dependencyManagement ≠ dependencies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parent_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parent 只能有一个
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
+  <a href="#modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        三、聚合（modules）——"一行命令构建全部"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、聚合（modules）——&quot;一行命令构建全部&quot;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        智能体之年
+        问题
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#claude-code" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#modules_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        编码智能体和 Claude Code 之年
+        解决方案：modules 聚合
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#llms" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#packagingpom" class="md-nav__link">
     <span class="md-ellipsis">
       
-        命令行 LLMs 之年
+        packaging=pom 是什么意思？
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#gemini" class="md-nav__link">
+  <a href="#spring-boot-pom" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Gemini 之年
+        四、Spring Boot 的父 POM——官方替你管好了
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#mcp" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        MCP 之年（唯一一年？）
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="四、Spring Boot 的父 POM——官方替你管好了">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        后记
+        问题
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-boot-starter-parent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        解决方案：spring-boot-starter-parent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所以你在子模块里写依赖几乎不用管版本号
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        加新依赖时的判断流程
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        五、总结
       
     </span>
   </a>
@@ -1662,10 +1896,10 @@
     
     
       <li class="md-path__item">
-        <a href="../../etc/proxy-cloud-database-conflict/" class="md-path__link">
+        <a href="././" class="md-path__link">
           
   <span class="md-ellipsis">
-    ETC
+    DEV
   </span>
 
         </a>
@@ -1682,7 +1916,7 @@
                 
                   
   
-    <a href="https://github.com/hezhengdong/hezhengdong.github.io/edit/master/docs/ai/2025-the-year-in-llms-reading-note.md" title="编辑此页" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/hezhengdong/hezhengdong.github.io/edit/master/docs/dev/maven-multi-module.md" title="编辑此页" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
     </a>
@@ -1691,58 +1925,184 @@
     
       
     
-    <a href="https://github.com/hezhengdong/hezhengdong.github.io/raw/master/docs/ai/2025-the-year-in-llms-reading-note.md" title="查看本页的源代码" class="md-content__button md-icon">
+    <a href="https://github.com/hezhengdong/hezhengdong.github.io/raw/master/docs/dev/maven-multi-module.md" title="查看本页的源代码" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-code-2" viewBox="0 0 24 24"><path d="M4 12.15V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2h-3.35"/><path d="M14 2v5a1 1 0 0 0 1 1h5M5 16l-3 3 3 3M9 22l3-3-3-3"/></svg>
     </a>
   
 
 
-<h1 id="2025-the-year-in-llms">2025: The year in LLMs</h1>
-<p>原文链接：<a href="https://simonwillison.net/2025/Dec/31/the-year-in-llms/">2025: The year in LLMs</a></p>
-<p>一篇优秀的文章，回顾了 12 个月 LLM 领域发生的一切。</p>
-<p>本人是 AI 小白，下面的文字是我在阅读文章后，对自己感兴趣的主题进行的记录与梳理。</p>
-<h2 id="_1">推理之年</h2>
-<p>读过文章后，我认为智能体的发展是思维链和工具调用不断组合演进的过程。</p>
-<p>思维链一直存在，只是从 OpenAI o1 开始，业界将思维链融入了模型的训练阶段，而不仅仅是提示词。</p>
-<p>而且将工具调用融入模型的推理阶段，也显著提高了模型的效果，例如 <a href="https://simonwillison.net/2025/Apr/21/ai-assisted-search/">AI 辅助搜索</a>。</p>
-<p>在此之前，AI 辅助搜索的效果并不理想，因为互联网充斥着垃圾信息，但是将搜索融入推理阶段，AI 能够进行反思，有效过滤垃圾信息，并进一步优化关键词迭代搜索。</p>
-<p>但是实际使用中，依旧存在一些问题。例如我要求 AI 检索并总结 2025 年 HN 最热门的 10 篇文章，如果互联网上不存在现有的总结文章，AI 就无法正确回答该问题。智能体或许能够做到这一点，自动阅读 HN 的 API 文档并编写脚本执行。</p>
-<h2 id="_2">智能体之年</h2>
-<p><a href="https://simonwillison.net/2025/Sep/18/agents/">较为明确的智能体定义</a>：一种循环运行工具以实现目标的 LLM。文章还统计了<a href="https://gist.github.com/simonw/beaa5f90133b30724c5cc1c4008d0654">一些其他定义</a>。</p>
-<p><a href="https://simonwillison.net/2025/Jan/10/ai-predictions/#one-year-code-research-assistants">目前已被证明有效的两种类型的智能体</a>：编码、研究。</p>
-<p>深度研究模式在 2025 上半年很流行，但现在推理模型可以在更短的时间内生成类似的结果。</p>
-<h2 id="claude-code">编码智能体和 Claude Code 之年</h2>
-<p>编码智能体发展的时间线：</p>
+<h1 id="maven">Maven 多模块与依赖管理</h1>
+<blockquote>
+<p>一项侧重于实践的技术，如果自己隔段时间不使用，相关知识总是淡忘的很快。开发本项目的过程中，通过向 AI 不断提问，又复习了一遍 Maven 高级功能。为了防止未来再次遗忘，需要沉淀一篇文章。自己撰写文章需要花时间，而且不一定能写好。AI 拥有世界知识，Coding Agent 拥有所有上下文信息，于是自己让 AI 基于聊天记录，结合本项目，结合技术发展脉络，沉淀了本篇文章，供未来遗忘后回看。</p>
+</blockquote>
+<h2 id="maven-jar-hell">一、没有 Maven 的时候——Jar Hell</h2>
+<p>Java 项目最早用 Ant。Ant 只管"编译 → 打包"，不管理依赖。开发者需要手动下载 jar 放到 <code>lib/</code> 目录，版本全凭人脑记。</p>
+<p>后来 Maven 出现了，解决的第一个问题就是<strong>依赖管理</strong>：声明 <code>groupId:artifactId:version</code>，Maven 自动从仓库拉取。</p>
+<p>但新问题随之而来：<strong>一个项目有多个子模块时，每个模块各自声明依赖，版本号散落各处。</strong> 改一个版本要改 N 个文件，漏改一处就跑出不一致。</p>
+<p>于是诞生了两个机制：</p>
+<hr />
+<h2 id="parent">二、继承（parent）——"版本号只写一次"</h2>
+<h3 id="_1">问题</h3>
+<div class="highlight"><pre><span></span><code>pushhub-handler/pom.xml:    hutool 5.8.44
+pushhub-ingress/pom.xml:    hutool 5.8.44
+pushhub-something/pom.xml:  hutool 5.8.43   ← 漏改了，版本不一致
+</code></pre></div>
+<h3 id="parent_1">解决方案：parent 继承</h3>
+<p>子模块的 <code>&lt;parent&gt;</code> 指向同一个父 POM，父 POM 用 <code>&lt;dependencyManagement&gt;</code> 统一管理版本号。</p>
+<div class="highlight"><pre><span></span><code>spring-boot-starter-parent (Spring 官方提供的父 POM)
+        ↑
+    pushhub (根 POM，自己写的父 POM)
+   ╱       ↑        ╲
+handler   common   ingress
+</code></pre></div>
+<p>根 pom.xml 中的 <code>&lt;dependencyManagement&gt;</code>：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependencyManagement&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">        </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">            </span><span class="nt">&lt;groupId&gt;</span>cn.hutool<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;artifactId&gt;</span>hutool-all<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;version&gt;</span>5.8.44<span class="nt">&lt;/version&gt;</span><span class="w">   </span><span class="cm">&lt;!-- 版本号只在这里出现一次 --&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;/dependencyManagement&gt;</span>
+</code></pre></div>
+<p>子模块中声明依赖，<strong>不写版本号</strong>：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>cn.hutool<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>hutool-all<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- 没有 &lt;version&gt;，从父 POM 的 dependencyManagement 继承 --&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+</code></pre></div>
+<h3 id="dependencymanagement-dependencies">关键认知：dependencyManagement ≠ dependencies</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>dependencyManagement</th>
+<th>dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>作用</td>
+<td>定义"版本目录"</td>
+<td>实际引入依赖</td>
+</tr>
+<tr>
+<td>是否加到 classpath</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>子模块可否不写</td>
+<td>——</td>
+<td>可以，不写的从父 POM 取版本</td>
+</tr>
+</tbody>
+</table>
+<p>打个比方：<code>dependencyManagement</code> 是图书馆的图书目录（告诉你有哪些书、什么版本），子模块的 <code>dependencies</code> 是你实际借走的书。目录本身不是你借的书。</p>
+<h3 id="parent_2">parent 只能有一个</h3>
+<p>Maven 规定一个模块只能有一个 <code>&lt;parent&gt;</code>。那如果既想要 Spring Boot 的版本管理，又想要自己项目的版本管理，怎么办？</p>
+<p>继承是<strong>传递的</strong>：</p>
+<div class="highlight"><pre><span></span><code>spring-boot-starter-parent
+        ↑
+    pushhub（根）
+        ↑
+    pushhub-handler
+</code></pre></div>
+<p>pushhub-handler 的 parent 是 pushhub，pushhub 的 parent 是 spring-boot-starter-parent。handler 能同时拿到两边的版本信息——自己的爹给的，以及爷爷给的。</p>
+<hr />
+<h2 id="modules">三、聚合（modules）——"一行命令构建全部"</h2>
+<h3 id="_2">问题</h3>
+<p>有了继承以后，三个模块要分别构建：</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>pushhub-common<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mvn<span class="w"> </span>install
+<span class="nb">cd</span><span class="w"> </span>../pushhub-handler<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mvn<span class="w"> </span>install<span class="w">   </span><span class="c1"># 依赖 common，必须先构建 common</span>
+<span class="nb">cd</span><span class="w"> </span>../pushhub-ingress<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mvn<span class="w"> </span>install
+</code></pre></div>
+<p>顺序不能错，忘了 common 先构建就会报错。</p>
+<h3 id="modules_1">解决方案：modules 聚合</h3>
+<p>父 POM 中声明：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;packaging&gt;</span>pom<span class="nt">&lt;/packaging&gt;</span>
+<span class="nt">&lt;modules&gt;</span>
+<span class="w">    </span><span class="nt">&lt;module&gt;</span>pushhub-common<span class="nt">&lt;/module&gt;</span>
+<span class="w">    </span><span class="nt">&lt;module&gt;</span>pushhub-handler<span class="nt">&lt;/module&gt;</span>
+<span class="w">    </span><span class="nt">&lt;module&gt;</span>pushhub-ingress<span class="nt">&lt;/module&gt;</span>
+<span class="nt">&lt;/modules&gt;</span>
+</code></pre></div>
+<p>然后在根目录一行命令：</p>
+<div class="highlight"><pre><span></span><code>mvn<span class="w"> </span>install
+</code></pre></div>
+<p>Maven 的 <strong>reactor</strong> 会自动按依赖关系排序构建。<code>pushhub-handler</code> 依赖 <code>pushhub-common</code>，reactor 保证 common 先编译。</p>
+<h3 id="packagingpom">packaging=pom 是什么意思？</h3>
+<p>普通模块的 packaging 默认是 <code>jar</code>（产出 jar 包）。父 POM 的 packaging 是 <code>pom</code>——<strong>不产出任何工件，只是一个管理节点</strong>。<code>spring-boot-starter-parent</code> 的 packaging 也是 <code>pom</code>，和你项目的根 POM 是同一种东西。</p>
+<hr />
+<h2 id="spring-boot-pom">四、Spring Boot 的父 POM——官方替你管好了</h2>
+<h3 id="_3">问题</h3>
+<p>Spring Boot 项目依赖几十个库：Jackson、Tomcat、Kafka Client、Hibernate Validator……如果让开发者自己管理版本号，不仅麻烦，还容易冲突——Jackson 的版本要和 Spring 匹配，Kafka Client 的版本要和 Broker 兼容。</p>
+<h3 id="spring-boot-starter-parent">解决方案：spring-boot-starter-parent</h3>
+<p>你在根 POM 里写了：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;parent&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-parent<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>4.0.6<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/parent&gt;</span>
+</code></pre></div>
+<p>这个 POM 文件塞了约 200 行的 <code>&lt;dependencyManagement&gt;</code>，定了所有 Spring Boot 官方集成的版本号。它还包含：</p>
 <ul>
-<li>23 年 OpenAI 实现 ChatGPT Code Interpreter，能够在 k8s 沙箱中运行 Python 代码，当时主要是用于优化 AI 的回答。现在的 AI 基本都内置了该功能，比如询问 12345 * 67890 的结果，会自动编码执行。</li>
-<li>25 年 2 月，Claude Code 是第一个真正成熟的本地编码智能体。实现了自动编写代码、执行代码、检查结果、以及进一步迭代。</li>
-<li>25 年 5 月的 OpenAI Codex Web 和 10 月的 Claude Code for web 实现了成熟的云端编码智能体。链接 Github 仓库，只需发任务，智能体自动 fork 代码进行编程，结束后为仓库提 PR。更加方便，也解决了本地智能体的安全问题。</li>
+<li>所有 Spring Boot starter 的版本号</li>
+<li>所有 Spring Boot 依赖的第三方库版本号（Jackson、Tomcat、Kafka 等）</li>
+<li>Maven 插件的版本和配置（<code>spring-boot-maven-plugin</code> 等）</li>
+<li>通用编译参数（Java 版本、编码等）</li>
 </ul>
-<h2 id="llms">命令行 LLMs 之年</h2>
-<p>LLM 与 Unix 命令行访问模型相当契合。</p>
-<p>这让我想起了那些热衷于用命令行和键盘解决所有问题的系统程序员。CLI 强大而又简约，主要基于文本，命令、输入和输出都很结构化，信噪比高，易于程序交互。</p>
-<p>相反，GUI 噪声高，充斥着对 LLM 无用的信息，想必基于 GUI 的智能体的发展会慢不少。</p>
-<h2 id="gemini">Gemini 之年</h2>
-<p><a href="https://blog.google/technology/ai/google-ai-news-recap-2025/">Google 对 2025 年的成就回顾</a>。Google 有着垂直整合软硬件的优势。</p>
-<h2 id="mcp">MCP 之年（唯一一年？）</h2>
-<p>前面说过，通过这篇文章，我觉得智能体的发展是思维链和工具调用不断组合演进的过程。下面是基于此思想梳理的时间线：</p>
-<ul>
-<li>22 年，CoT 和 ReAct 概念的提出，这是理论奠基。</li>
-<li>23 年，OpenAI 推出 Function Calling，让 LLM 能够感知外部世界并做出决策。Web Search 和 Code Execution 功能本质是还是函数调用。</li>
-<li>24 年末，Anthropic 发布 MCP 标准，统一了工具调用的 API 格式。</li>
-<li>24 年末，推理模型发展，思维链在训练阶段实现，而不仅仅是提示词。</li>
-<li>25 年 2 月，Claude Code 发布，模型直接调用 CLI 工具。</li>
-<li>25 年末，Skills 发布，让模型根据 Skills 文件在 Shell 中使用 CLI 工具或编写脚本运行。</li>
-</ul>
-<p>MCP 的作用：客户端侧没什么本质变化，从写一个 OpenAI Function Definition 给 LLM 变成了写 MCP Schema。主要是为服务端侧制定了标准，让资源提供方部署 MCP 服务器，提供 MCP 标准的 API，方便 LLM 调用。</p>
-<p>MCP 的缺陷：MCP 仅仅是为服务端侧制定了新的 API 标准，除此之外没有解决任何问题。Claude Code 等编码智能体的发展，让人们意识到客户端测可以通过调用现有的 CLI 工具或 LLM 自行为 API 编写脚本的方式来解决，MCP 唯一的作用也显得又些鸡肋。</p>
-<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/29001189476">一篇不错的 MCP 教程</a></li>
-<li><a href="https://www.zhihu.com/question/1903481980374476130/answer/1903527338873946826">一篇指出 MCP 缺陷的问答</a></li>
-</ul>
-<h2 id="_3">后记</h2>
-<p>AI 是技术风口，技术发展日新月异。可惜自己显然没实力卷进去，只是在门口徘徊，了解一些浅显的概念，不至于被时代落下太多。</p>
+<p>这本身就是 Spring Boot 依赖管理机制的一部分——<strong>不是额外的东西，而是 Spring Boot 的基石</strong>。</p>
+<h3 id="_4">所以你在子模块里写依赖几乎不用管版本号</h3>
+<div class="highlight"><pre><span></span><code><span class="cm">&lt;!-- handler/pom.xml --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-kafka<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="cm">&lt;!-- 版本号？spring-boot-starter-parent 已经定好了，不用写 --&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p>这就是 Spring Boot "开箱即用"的一个侧面——不只是 starter 打包了依赖，更是父 POM 替你管理了版本兼容性。</p>
+<h3 id="_5">加新依赖时的判断流程</h3>
+<ol>
+<li><strong>这个库被 Spring Boot 管理了吗？</strong> → 查 <a href="https://docs.spring.io/spring-boot/appendix/dependency-versions/index.html">Spring Boot 官方依赖版本表</a>，如果在列，直接在子模块声明，不写版本。</li>
+<li><strong>不在 Spring Boot 管理范围内？</strong> → 先在根 pom.xml 的 <code>&lt;dependencyManagement&gt;</code> 里登记版本号，再在需要的子模块声明依赖（不写版本）。</li>
+<li><strong>只在单个子模块用、未来也不打算共享？</strong> → 直接在子模块写完整 GAV，没有必要强行上浮到父 POM。</li>
+</ol>
+<hr />
+<h2 id="_6">五、总结</h2>
+<p>Maven 多模块体系解决的是两个独立的问题：</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>写法</th>
+<th>解决的问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>继承</td>
+<td><code>&lt;parent&gt;</code></td>
+<td>版本号、配置只写一次，子模块自动继承</td>
+</tr>
+<tr>
+<td>聚合</td>
+<td><code>&lt;modules&gt;</code></td>
+<td>根目录一行命令按顺序构建全部模块</td>
+</tr>
+<tr>
+<td>版本目录</td>
+<td><code>&lt;dependencyManagement&gt;</code></td>
+<td>定义版本号，不实际引入，子模块按需取用</td>
+</tr>
+</tbody>
+</table>
+<p>Spring Boot 在此基础上提供了一层标准化的父 POM，让开发者不需要操心几十个库的版本兼容——这是 Spring Boot "约定优于配置"哲学在构建层面的体现。</p>
 
 
 

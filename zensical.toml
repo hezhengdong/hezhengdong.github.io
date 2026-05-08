@@ -68,6 +68,7 @@ nav = [
     "sys/lru-k-paper-reading.md",
   ]},
   {"DEV" = [
+    "dev/maven-multi-module.md",
     {"消息推送平台" = [
         "dev/消息推送平台/index.md",
         "dev/消息推送平台/接入层.md",
