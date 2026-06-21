@@ -12,36 +12,34 @@
         <meta name="author" content="hzd">
       
       
-        <link rel="canonical" href="https://hezhengdong.github.io/sys/mit-6830/lab5/">
+        <link rel="canonical" href="https://hezhengdong.github.io/sys/spanner-paper-reading/">
       
       
-        <link rel="prev" href="../lab4/">
       
-      
-        <link rel="next" href="../lab6/">
+        <link rel="next" href="../mit-65840/lab1-mapreduce/">
       
       
         
       
       
-      <link rel="icon" href="../../../images/book.png">
+      <link rel="icon" href="../../images/book.png">
       <meta name="generator" content="zensical-0.0.32">
     
     
       
-        <title>Lab5 B+树索引实现 - hzd's notes</title>
+        <title>论文阅读 Spanner - hzd's notes</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../assets/stylesheets/modern/main.53a7feaf.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.53a7feaf.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
       
       
 
@@ -60,7 +58,7 @@
       
     
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -85,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lab5-b" class="md-skip">
+        <a href="#spanner" class="md-skip">
           跳转至
         </a>
       
@@ -101,7 +99,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="页眉">
-    <a href="../../.." title="hzd&#x27;s notes" class="md-header__button md-logo" aria-label="hzd's notes" data-md-component="logo">
+    <a href="../.." title="hzd&#x27;s notes" class="md-header__button md-logo" aria-label="hzd's notes" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
@@ -121,7 +119,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Lab5 B+树索引实现
+              论文阅读 Spanner
             
           </span>
         </div>
@@ -210,7 +208,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="hzd&#x27;s notes" class="md-nav__button md-logo" aria-label="hzd's notes" data-md-component="logo">
+    <a href="../.." title="hzd&#x27;s notes" class="md-nav__button md-logo" aria-label="hzd's notes" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
@@ -303,10 +301,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../spanner-paper-reading/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    论文阅读 Spanner
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
         
   
   
@@ -322,6 +347,121 @@
   
 
       </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        引言
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        架构
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#truetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TrueTime
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        事务支持
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="事务支持">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        读写事务
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        只读事务
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        其他
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        结语
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -399,7 +539,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mit-65840/lab1-mapreduce/" class="md-nav__link">
+      <a href="../mit-65840/lab1-mapreduce/" class="md-nav__link">
         
   
   
@@ -427,7 +567,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mit-65840/lab2-kvstore/" class="md-nav__link">
+      <a href="../mit-65840/lab2-kvstore/" class="md-nav__link">
         
   
   
@@ -455,7 +595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mit-65840/lab3a-leader-election/" class="md-nav__link">
+      <a href="../mit-65840/lab3a-leader-election/" class="md-nav__link">
         
   
   
@@ -483,7 +623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mit-65840/lab3b-log/" class="md-nav__link">
+      <a href="../mit-65840/lab3b-log/" class="md-nav__link">
         
   
   
@@ -511,7 +651,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mit-65840/lab3-raft/" class="md-nav__link">
+      <a href="../mit-65840/lab3-raft/" class="md-nav__link">
         
   
   
@@ -539,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mit-65840/lab4-fault-tolerant-kvstore/" class="md-nav__link">
+      <a href="../mit-65840/lab4-fault-tolerant-kvstore/" class="md-nav__link">
         
   
   
@@ -567,7 +707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../mit-65840/lab5-sharded-kvstore/" class="md-nav__link">
+      <a href="../mit-65840/lab5-sharded-kvstore/" class="md-nav__link">
         
   
   
@@ -603,7 +743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../time-clocks-paper-reading/" class="md-nav__link">
+      <a href="../time-clocks-paper-reading/" class="md-nav__link">
         
   
   
@@ -628,8 +768,6 @@
                 
   
   
-    
-  
   
   
     
@@ -657,15 +795,15 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../mit-6830/" class="md-nav__link ">
               
   
   
@@ -689,7 +827,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_1_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -709,7 +847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../lab1/" class="md-nav__link">
+      <a href="../mit-6830/lab1/" class="md-nav__link">
         
   
   
@@ -737,7 +875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../lab2/" class="md-nav__link">
+      <a href="../mit-6830/lab2/" class="md-nav__link">
         
   
   
@@ -765,7 +903,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../lab3/" class="md-nav__link">
+      <a href="../mit-6830/lab3/" class="md-nav__link">
         
   
   
@@ -793,7 +931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../lab4/" class="md-nav__link">
+      <a href="../mit-6830/lab4/" class="md-nav__link">
         
   
   
@@ -818,37 +956,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Lab5 B+树索引实现
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="././" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../mit-6830/lab5/" class="md-nav__link">
         
   
   
@@ -864,238 +975,6 @@
   
 
       </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="目录">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目录
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        为什么选择B+树
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#b_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        B+树结构
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="B+树结构">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        类
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        结构图
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#findleafpage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        findLeafPage
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="findLeafPage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        递归逻辑
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        示例
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inserttuple" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        insertTuple
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="insertTuple">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        方法调用
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        示例
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        代码细节
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deletetuple" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        deleteTuple
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="deleteTuple">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        方法调用
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        合并页面
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        重新分配页面
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        代码细节
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_12" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        其他
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1108,7 +987,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../lab6/" class="md-nav__link">
+      <a href="../mit-6830/lab6/" class="md-nav__link">
         
   
   
@@ -1144,7 +1023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../lru-k-paper-reading/" class="md-nav__link">
+      <a href="../lru-k-paper-reading/" class="md-nav__link">
         
   
   
@@ -1237,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dev/maven-multi-module/" class="md-nav__link">
+      <a href="../../dev/maven-multi-module/" class="md-nav__link">
         
   
   
@@ -1295,7 +1174,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/" class="md-nav__link ">
+            <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/" class="md-nav__link ">
               
   
   
@@ -1339,7 +1218,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%8E%A5%E5%85%A5%E5%B1%82/" class="md-nav__link">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%8E%A5%E5%85%A5%E5%B1%82/" class="md-nav__link">
         
   
   
@@ -1367,7 +1246,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="md-nav__link">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="md-nav__link">
         
   
   
@@ -1395,7 +1274,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E8%B4%B9%E5%B1%82/" class="md-nav__link">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E6%B6%88%E8%B4%B9%E5%B1%82/" class="md-nav__link">
         
   
   
@@ -1423,7 +1302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" class="md-nav__link">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/" class="md-nav__link">
         
   
   
@@ -1451,7 +1330,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" class="md-nav__link">
+      <a href="../../dev/%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E5%B9%B3%E5%8F%B0/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" class="md-nav__link">
         
   
   
@@ -1556,7 +1435,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../etc/proxy-cloud-database-conflict/" class="md-nav__link">
+      <a href="../../etc/proxy-cloud-database-conflict/" class="md-nav__link">
         
   
   
@@ -1584,7 +1463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ai/2025-the-year-in-llms-reading-note/" class="md-nav__link">
+      <a href="../../ai/2025-the-year-in-llms-reading-note/" class="md-nav__link">
         
   
   
@@ -1612,7 +1491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ai/rag-learning-note/" class="md-nav__link">
+      <a href="../../ai/rag-learning-note/" class="md-nav__link">
         
   
   
@@ -1640,7 +1519,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../c-review/" class="md-nav__link">
+      <a href="../c-review/" class="md-nav__link">
         
   
   
@@ -1709,111 +1588,66 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        为什么选择B+树
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#b_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        B+树结构
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="B+树结构">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        类
+        引言
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        结构图
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#findleafpage" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        findLeafPage
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="findLeafPage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        递归逻辑
+        架构
       
     </span>
   </a>
   
 </li>
+      
+        <li class="md-nav__item">
+  <a href="#truetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TrueTime
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        事务支持
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="事务支持">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        示例
+        读写事务
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inserttuple" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        insertTuple
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="insertTuple">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        方法调用
+        只读事务
       
     </span>
   </a>
@@ -1824,95 +1658,23 @@
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        示例
+        其他
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
-        代码细节
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deletetuple" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        deleteTuple
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="deleteTuple">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        方法调用
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        合并页面
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        重新分配页面
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        代码细节
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_12" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        其他
+        结语
       
     </span>
   </a>
@@ -1944,7 +1706,7 @@
   
   
     <li class="md-path__item">
-      <a href="../../.." class="md-path__link">
+      <a href="../.." class="md-path__link">
         
   <span class="md-ellipsis">
     Welcome to hzd's notes!
@@ -1962,28 +1724,10 @@
     
     
       <li class="md-path__item">
-        <a href="../../spanner-paper-reading/" class="md-path__link">
+        <a href="././" class="md-path__link">
           
   <span class="md-ellipsis">
     SYS
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    MIT 6.830 Lab 记录
   </span>
 
         </a>
@@ -2000,7 +1744,7 @@
                 
                   
   
-    <a href="https://github.com/hezhengdong/hezhengdong.github.io/edit/master/docs/sys/mit-6830/lab5.md" title="编辑此页" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/hezhengdong/hezhengdong.github.io/edit/master/docs/sys/spanner-paper-reading.md" title="编辑此页" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
     </a>
@@ -2009,235 +1753,61 @@
     
       
     
-    <a href="https://github.com/hezhengdong/hezhengdong.github.io/raw/master/docs/sys/mit-6830/lab5.md" title="查看本页的源代码" class="md-content__button md-icon">
+    <a href="https://github.com/hezhengdong/hezhengdong.github.io/raw/master/docs/sys/spanner-paper-reading.md" title="查看本页的源代码" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-code-2" viewBox="0 0 24 24"><path d="M4 12.15V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2h-3.35"/><path d="M14 2v5a1 1 0 0 0 1 1h5M5 16l-3 3 3 3M9 22l3-3-3-3"/></svg>
     </a>
   
 
 
-<h1 id="lab5-b">Lab5 B+树索引实现</h1>
-<p>Lab5 实现基于 B+ 树的元组增删。</p>
-<p>课程代码已经提供实现树形结构所需的所有底层代码和很多辅助方法，自己只需实现几个核心方法即可。</p>
-<p>参考链接</p>
-<p><a href="https://zhuanlan.zhihu.com/p/438912793">MIT 6.830 Database Systems Lab5 zhihu.com</a></p>
-<p><a href="https://thomas-li-sjtu.github.io/2022/06/23/Simple-DB-Lab5/">MIT-6.830 Lab5 总结与备忘 thomas-li-sjtu.github.io</a></p>
-<p><a href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html">数据结构可视化网站 cs.usfca.edu/</a></p>
-<h2 id="b">为什么选择B+树</h2>
-<p>问题：如果数据分布不均匀，会导致普通二叉树层数较深。</p>
-<p>解决：自平衡的树，解决了数据分布不均匀的问题，减少检索次数。如：AVL 树，红黑树。</p>
-<p>问题：这两类树形结构，每个节点只存储一个数据，适合内存 I/O。对于磁盘 I/O 来说，依旧层数较深，检索速度慢。</p>
-<p>解决：B 树（多路平衡查找树）。B 树每个节点存储多个数据，树的层数少，磁盘 I/O 次数少。</p>
-<p>问题：B 树范围查询效率低下。</p>
-<p>解决：B+ 树：</p>
+<h1 id="spanner">论文阅读 Spanner</h1>
+<h2 id="_1">引言</h2>
+<p><a href="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/spanner-osdi2012.pdf">Spanner: Google's Globally-Distributed Database (OSDI 2012)</a></p>
+<p>很喜欢这篇论文，把分布式和数据库领域的很多知识整合了起来，包括分布式中的时钟漂移、共识算法、线性一致性、分布式事务，数据库中的事务模型 2PL 与 MVCC。从学习的角度考虑，读懂这篇论文大有裨益。</p>
+<p>先讲讲时代背景，关系型数据库有着方便的 SQL 语言、ACID 事务支持，但是扩展性不佳。于是谷歌抛弃了 SQL 和跨行事务，可无限扩展的 MapReduce、GFS、BigTable 开启了大数据时代。但是开发人员终究希望使用便捷的 SQL 和强一致的事务，因此既支持无限扩展，又支持 SQL 和强一致事务的 Spanner 就诞生了。</p>
+<h2 id="_2">架构</h2>
+<p>Spanner 是能够跨洲际容错的数据库，论文先介绍了 Spanner 的架构和 SpanServer 的软件栈，我把这部分内容画到了一张图中。</p>
+<p><img alt="spanner-architecture" src="../spanner-paper-reading.assets/spanner-architecture.svg" /></p>
+<p>剩下的内容是一些细节：</p>
 <ul>
-<li>由内节点与叶节点组成：<ul>
-<li>内节点只起到索引数据的作用，不存储数据。</li>
-<li>叶节点存储具体数据，节点间有兄弟指针相互连接，形成双向链表，便于范围扫描。</li>
+<li>每一个 Paxos Leader 都有锁表和事务管理器。</li>
+<li>Tablet 内部还有目录的抽象。目录是数据放置的单元，不同于 BigTable，Spanner Tablet 内可以有多个不同键区间的目录，方便将经常一起访问的目录放到一起以优化性能。</li>
+<li>实现了半关系型数据库。并通过表交错指令，允许开发者将逻辑相关的表放在一起以优化性能。</li>
 </ul>
-</li>
-</ul>
-<h2 id="b_1">B+树结构</h2>
-<h3 id="_1">类</h3>
-<p>BTreeFile：核心文件，负责管理 B+ 树的文件结构。</p>
-<p>BTreeFile 由四种不同类型的页面组成：</p>
-<ul>
-<li>BTreePage：B+ 树页面的抽象类，定义了页面的基本操作<ul>
-<li>BTreeInternalPage：内部页，存储多个条目。<ul>
-<li>BTreeEntry：条目，一个键值，两个子节点，指向内部页或叶页。</li>
-</ul>
-</li>
-<li>BTreeLeafPage：叶子页，存储具体数据。</li>
-</ul>
-</li>
-<li>BTreeRootPtrPage：根指针页面，存储指向根节点（B+ 树起始位置）的指针。</li>
-<li>BTreeHeaderPage：头页面，存储元数据。</li>
-</ul>
-<pre class="mermaid"><code>classDiagram
-    class Page {
-        &lt;&lt;interface&gt;&gt;
-    }
-
-    class BTreePage {
-        &lt;&lt;abstract&gt;&gt;
-    }
-
-    class BTreeRootPtrPage {
-    }
-
-    class BTreeHeaderPage {
-    }
-
-    class BTreeLeafPage {
-    }
-
-    class BTreeInternalPage {
-    }
-
-    class BTreeEntry {
-    }
-
-    Page &lt;|.. BTreePage
-    Page &lt;|.. BTreeRootPtrPage
-    Page &lt;|.. BTreeHeaderPage
-    BTreePage &lt;|-- BTreeLeafPage
-    BTreePage &lt;|-- BTreeInternalPage
-    BTreeInternalPage *-- BTreeEntry</code></pre>
-<h3 id="_2">结构图</h3>
-<p><img alt="SimpleDB中B+Tree的详细结构" src="../Lab5.assets/SimpleDB中B+Tree的详细结构.png" /></p>
-<p>注意子页与父页间的三类指针。</p>
-<h2 id="findleafpage">findLeafPage</h2>
-<h3 id="_3">递归逻辑</h3>
-<p>终止条件</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// 如果当前页面类型是叶子页面，则直接返回该叶子页面</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pid</span><span class="p">.</span><span class="na">pgcateg</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">BTreePageId</span><span class="p">.</span><span class="na">LEAF</span><span class="p">){</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">BTreeLeafPage</span><span class="p">)</span><span class="w"> </span><span class="n">getPage</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span><span class="w"> </span><span class="n">dirtypages</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">perm</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>递归逻辑</p>
-<div class="highlight"><pre><span></span><code><span class="c1">// 遍历内部页面的条目</span>
-<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="na">hasNext</span><span class="p">()){</span>
-<span class="w">    </span><span class="n">entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">it</span><span class="p">.</span><span class="na">next</span><span class="p">();</span>
-<span class="w">    </span><span class="c1">// 如果未指定索引字段（f==null），默认递归查找左子树</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">){</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">findLeafPage</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span><span class="w"> </span><span class="n">dirtypages</span><span class="p">,</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getLeftChild</span><span class="p">(),</span><span class="w"> </span><span class="n">perm</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// 如果当前条目键值 &gt;= f，则递归查找当前条目的左子树</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">entry</span><span class="p">.</span><span class="na">getKey</span><span class="p">().</span><span class="na">compare</span><span class="p">(</span><span class="n">Op</span><span class="p">.</span><span class="na">GREATER_THAN_OR_EQ</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">)){</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">findLeafPage</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span><span class="w"> </span><span class="n">dirtypages</span><span class="p">,</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getLeftChild</span><span class="p">(),</span><span class="w"> </span><span class="n">perm</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-<span class="c1">// 如果f大于所有条目键值，则递归查找内部页中最后一个条目的右子树</span>
-<span class="k">return</span><span class="w"> </span><span class="n">findLeafPage</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span><span class="w"> </span><span class="n">dirtypages</span><span class="p">,</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">getRightChild</span><span class="p">(),</span><span class="w"> </span><span class="n">perm</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
-</code></pre></div>
-<h3 id="_4">示例</h3>
-<p><img alt="举例讲解findLeafPage" src="../Lab5.assets/举例讲解findLeafPage.png" /></p>
-<h2 id="inserttuple">insertTuple</h2>
-<h3 id="_5">方法调用</h3>
-<pre class="mermaid"><code>graph TD;
-    IT[insertTuple] --findLeafPage--&gt; J1[叶页槽位];
-    J1 --已满--&gt; SL[splitLeafPage]
-    SL --&gt; GPE[getParentWithEmptySlots&lt;br&gt;父内部页槽位]
-
-    GPE --已满--&gt; SI[splitInternalPage]
-    SI --&gt; GPE1[getParentWithEmptySlots&lt;br&gt;父内部页槽位&lt;br&gt;递归调用]
-
-    GPE --有空槽--&gt; R2[返回父内部页]
-    R2 --&gt; PIE[插入条目]
-
-    J1 --有空槽--&gt; PIT[插入元组]
-    PIT --&gt; R1[返回脏页]</code></pre>
-<h3 id="_6">示例</h3>
-<p>图片来源：<a href="https://zhuanlan.zhihu.com/p/438912793">MIT 6.830 Database Systems Lab5 zhihu.com MorningStar</a></p>
-<p><img alt="B+Tree插入元组图解1" src="../Lab5.assets/B+Tree插入元组图解1.png" /></p>
-<p><img alt="B+Tree插入元组图解2" src="../Lab5.assets/B+Tree插入元组图解2.png" /></p>
-<h3 id="_7">代码细节</h3>
-<p>分裂页面时</p>
-<ul>
-<li><strong>元组转移</strong>：通过页面的迭代器实现。</li>
-<li><strong>指针更新</strong>：<ul>
-<li>更新分裂后涉及的三类指针：<ul>
-<li>子页指向父页的指针。</li>
-<li>条目本身所属的子页。</li>
-<li>条目指向左右孩子节点的指针。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>脏页处理</strong>：<ul>
-<li>调用方法前，初始化一个 Map 专门用来存储脏页。</li>
-<li>每次递归过程中，将涉及到的三个页（分裂出的两个页和父页）加入脏页 Map 中。</li>
-<li><code>BufferPool.insertTuple</code> 中统一对脏页进行处理。</li>
-</ul>
-</li>
-</ul>
-<h2 id="deletetuple">deleteTuple</h2>
-<h3 id="_8">方法调用</h3>
-<pre class="mermaid"><code>graph TD;
-    DT[deleteTuple] --getPage--&gt; J1[页面占用率];
-    J1 --小于50%--&gt; HP[handleMinOccupancyPage];
-    J1 --大于等于50%--&gt; R1[返回脏页];
-    HP --&gt; J2[页面类型];
-    J2 --叶子页--&gt; HL[handleMinOccupancyLeafPage];
-    HL --&gt; J3[兄弟页存在情况];
-    J3 --存在左兄弟页--&gt; GLL[获取左兄弟页];
-    J3 --存在右兄弟页--&gt; GLR[获取右兄弟页];
-    GLL --&gt; J4[兄弟页占用率];
-    J4 --小于50%--&gt; ML[mergeLeafPages];
-    ML --&gt; HP1[handleMinOccupancyPage];
-    J4 --大于等于50%--&gt; SL[stealFromLeafPage];
-    GLR --&gt; J5[兄弟页占用率];
-    J5 --小于50%--&gt; ML;
-    J5 --大于等于50%--&gt; SL;
-
-    J2 --内部页--&gt; HI[handleMinOccupancyInternalPage];
-    HI --&gt; J6[兄弟页存在情况];
-    J6 --存在左兄弟页--&gt; GIL[获取左兄弟页];
-    J6 --存在右兄弟页--&gt; GIR[获取右兄弟页];
-    GIL --&gt; J7[兄弟页占用率];
-    J7 --小于50%--&gt; SLI[stealFromLeftInternalPage];
-    J7 --大于等于50%--&gt; MI[mergeInternalPages];
-    MI --&gt; HP2[handleMinOccupancyPage];
-    GIR --&gt; J8[兄弟页占用率];
-    J8 --小于50%--&gt; MI;
-    J8 --大于等于50%--&gt; SRI[stealFromRightInternalPage];</code></pre>
-<p><strong>流程</strong></p>
-<p><code>deleteTuple</code>，第一遍必然走的是叶子页分支。</p>
-<p><code>mergeLeafPages</code> 会删除内部页中的一个条目，随后递归调用 <code>handleMinOccupancyPage</code> 处理内部页。</p>
-<p><code>mergeInternalPages</code> 同理。</p>
-<p><strong>如何获取叶页与内部页的兄弟页？</strong></p>
-<ol>
-<li>获取当前页的父内部页。</li>
-<li>遍历父内部页的条目，找到与当前页关联的两个条目。</li>
-<li>左条目的左孩子就是当前页的左兄弟页，右兄弟页同理。</li>
-</ol>
-<p><img alt="图解-获取叶页与内部页的兄弟页.png" src="../Lab5.assets/图解-获取叶页与内部页的兄弟页.png" /></p>
-<p><strong>为什么叶页不用链表获取兄弟页？</strong></p>
-<p>不知道，课程代码是这样提供的，我猜是为了统一叶页与内部页获取兄弟页的逻辑。</p>
-<h3 id="_9">合并页面</h3>
-<p>兄弟页占用率小于 50%，合并两页面。</p>
-<p>页面合并后，父内部页会减少一个条目。</p>
-<p>检查条目减少后父页面的占用率，如果不足 50%，则递归调用 <code>handleMinOccupancyPage</code>。</p>
-<p><img alt="合并页面" src="../Lab5.assets/合并页面.png" /></p>
-<h3 id="_10">重新分配页面</h3>
-<p>兄弟页占用率大于等于 50%，有多余元组。</p>
-<p>将兄弟页的多余元组转移到当前页面中，<span class="arithmatex">\(转移的元组数 = \frac{二者元组和}{2}-当前页面元组数\)</span>。</p>
-<p><img alt="重新分配页面" src="../Lab5.assets/重新分配页面.png" /></p>
-<h3 id="_11">代码细节</h3>
-<p>合并或重新分配页面时</p>
-<ul>
-<li><strong>元组转移</strong>：通过页面的迭代器实现。</li>
-<li><strong>指针更新</strong>：<ul>
-<li>更新分裂后涉及的三类指针：<ul>
-<li>子页指向父页的指针。</li>
-<li>条目本身所属的子页。</li>
-<li>条目指向左右孩子节点的指针。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>脏页处理</strong>：<ul>
-<li>调用方法前，初始化一个 Map 专门用来存储脏页。</li>
-<li>每次递归过程中，将涉及到的页（合并或重新分配的子页与父页）加入脏页 Map 中。</li>
-<li><code>BufferPool.deleteTuple</code> 中统一对脏页进行处理。</li>
-</ul>
-</li>
-</ul>
-<h2 id="_12">其他</h2>
+<h2 id="truetime">TrueTime</h2>
+<p>Spanner 认为自己最关键的特性是 TrueTime，工程实现方面我没有看懂，理论方面 Lamport 的 Time Clocks 论文进行过阐释，虽然世界上不存在两个完全相同的时钟，但是通过校对算法能够计算出时钟间的误差范围。</p>
+<p>Spanner 做到了这一点，并提供了三个核心 API。最重要的是 <code>TT.now()</code>，为开发者提供了时钟的误差范围，<code>TT.after(t)</code> 和 <code>TT.before(t)</code> 是 <code>TT.now()</code> 的上层封装。</p>
+<h2 id="_3">事务支持</h2>
+<p>这一节论文开始介绍 Spanner 支持的各个事务操作，在此之前，先回顾一下单机数据库的事务操作。</p>
+<p>单机数据库中，事务一般通过 MVCC 实现。事务可以被分为两类，快照读（select）和当前读（insert、delete、update、select ... for update）。快照读与当前读并发执行时，快照读读的是旧版本数据，如此解决了读写冲突的问题。多个当前读并发执行时，通过类似 2PL 的悲观锁机制，解决写写冲突的问题。</p>
+<p>Spanner 的读写事务相当于上面提到的当前读，只读事务相当于上面提到的快照读。另外两类事务是 Spanner 根据自身多版本特性的扩展，指定精确时间戳读历史版本，指定时间戳范围读历史版本。</p>
+<p><img alt="spanner-transaction-type" src="../spanner-paper-reading.assets/spanner-transaction-type.png" /></p>
+<h3 id="_4">读写事务</h3>
 <blockquote>
-<p>为什么删除元组时不需要调用 findLeafPage 查找叶页？</p>
+<p>主要涉及论文 4.1.2 与 4.2.1</p>
 </blockquote>
-<p>插入元组时，由于不知道该元组应当插入哪个页面，所以需要 findLeafPage 根据 Tuple 索引值，从根节点递归查找叶页。</p>
-<p>删除元组时，元组的 RecordId 中已经记录了该元组所属的 PageId，直接调用 getPage 即可获取对应叶页。</p>
+<p>从这里开始介绍 TrueTime 在 Spanner 中起到的作用。先介绍一下 2PC 的问题：2PC 能够保证事务的原子性，但是由于时钟漂移，无法保证两个事务的时间戳符合线性一致性。</p>
+<p>对于读写事务，为了实现线性一致性，Spanner 规定了两个必须满足的条件：Paxos 内的写操作时间戳必须单调递增；事务 T1 提交之后，事务 T2 才开始，那么事务 T2 时间戳必须大于 T1。</p>
+<p>Spanner 通过 2PL 与 2PC 实现读写事务。事务时间戳的分配时机为获取所有锁后，释放任何锁前。具体实现中，Spanner 指定一个 Paxos 复制组为协调者，在准备阶段，2PC 的参与者向协调者发送准备时间戳，协调者为该事务选择的提交时间戳必须大于所有参与者的准备时间戳，并在 <code>TT.after(提交时间戳) == true</code> 时才进入提交阶段。</p>
+<h3 id="_5">只读事务</h3>
 <blockquote>
-<p>B+ 树查询在 SimpleDB 中是怎么用的？</p>
+<p>主要涉及论文 4.1.3</p>
 </blockquote>
-<p>BTreeFileEncoder 中根据用户传入的命令行参数，决定是否使用 B+ 树查询。</p>
-<blockquote>
-<p>进阶</p>
-</blockquote>
-<p><a href="https://15445.courses.cs.cmu.edu/fall2022/notes/08-trees.pdf">cmu15445 f22 lecture08 tree-indexes note</a></p>
-<p>Lab 实现的是最基本的东西，还有很多进阶知识，cmu 的讲义里写的很清晰。</p>
+<p>在介绍只读事务前，先介绍一下标准的 Raft 算法。</p>
+<p>标准 Raft 算法中，如果要确保线性一致性，所有读写请求必须由 Leader 进行处理。Follower 只是 Leader 的副本，数据可能滞后。如果允许 Follower 处理读请求，客户端可能会读到旧数据，违反线性一致性。</p>
+<p>Spanner 为了提高性能，做了 Follower 读的优化，通过类似 MVCC 多版本副本的方式实现。能够做到这一点，主要也是得益于 TrueTime 为每个事务提供的符合线性一致性的时间戳。</p>
+<p>只读事务的重点在于 <span class="arithmatex">\(t_{safe}\)</span>：如果 <span class="arithmatex">\(t_{read}\)</span>（读请求的时间戳）小于 <span class="arithmatex">\(t_{safe}\)</span>，那么就能够直接使用 Follower 中的数据，否则阻塞等待，直到 <span class="arithmatex">\(t_{safe}\)</span> 大于读请求时间戳（出自 4.1.4）。</p>
+<p><span class="arithmatex">\(t_{safe} = min(t_{safe}^{Paxos}, t_{safe}^{TM})\)</span></p>
+<ul>
+<li><span class="arithmatex">\(t_{safe}^{Paxos}\)</span> 是 Paxos 复制组中的最后一个已完成的读写事务时间戳。</li>
+<li><span class="arithmatex">\(t_{safe}^{TM} = min_i(s_{i,g}^{perpare}) - 1\)</span>，<span class="arithmatex">\(t_{safe}^{TM}\)</span> 是当前已准备但未提交的读写事务的最小时间戳的前一刻。</li>
+</ul>
+<p>如此能够保证 <span class="arithmatex">\(t_{safe}\)</span> 时间戳内不会遗漏任何已提交事务，<span class="arithmatex">\(t_{read}&lt;t_{safe}\)</span> 的只读事务能在 Follower 读到满足线性一致性的数据。</p>
+<h3 id="_6">其他</h3>
+<p>4.2.1 如何减少 2PC 的广域网往返次数的优化、4.1.4 和 4.2.2 为快照事务分配时间戳的优化方案、4.2.3 如何实现数据库模式变更、Paxos 相关、未来改进，这些部分我没有细看。</p>
+<h2 id="_7">结语</h2>
+<p>TrueTime 是论文的核心，为读写事务实现线性一致性，也为高吞吐的只读事务提供了基石。论文中还有一些性能优化，比如将关联访问的数据尽可能在物理上放在一起、优化 2PC，目的都是尽可能减少网络往返次数以提高性能。在相关工作章节中，作者也提到比起分层的实现，Spanner 集成多个层更有优势，能够做更好的性能优化。</p>
+<p>实现一个支持可扩展性与一致性事务的数据库在理论上似乎并不难，正确的时钟、共识算法容错、分片扩展、2PL 与 MVCC 实现事务。Spanner 通过 TrueTime、基于 TrueTime 的工程实现与优化，证明这样的系统在性能上也可接受。</p>
 
 
 
@@ -2332,12 +1902,12 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../../..","features":["announce.dismiss","content.action.edit","content.action.view","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","header.autohide","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight"],"search":"../../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"已复制","clipboard.copy":"复制","search.result.more.one":"在该页上还有 1 个符合条件的结果","search.result.more.other":"在该页上还有 # 个符合条件的结果","search.result.none":"没有找到符合条件的结果","search.result.one":"找到 1 个符合条件的结果","search.result.other":"# 个符合条件的结果","search.result.placeholder":"键入以开始搜索","search.result.term.missing":"缺少","select.version":"选择当前版本"},"version":null}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.action.edit","content.action.view","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","header.autohide","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.path","navigation.sections","navigation.top","navigation.tracking","search.highlight"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"已复制","clipboard.copy":"复制","search.result.more.one":"在该页上还有 1 个符合条件的结果","search.result.more.other":"在该页上还有 # 个符合条件的结果","search.result.none":"没有找到符合条件的结果","search.result.one":"找到 1 个符合条件的结果","search.result.other":"# 个符合条件的结果","search.result.placeholder":"键入以开始搜索","search.result.term.missing":"缺少","select.version":"选择当前版本"},"version":null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.91a19a9e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.91a19a9e.min.js"></script>
       
-        <script src="../../../javascripts/mathjax.js"></script>
+        <script src="../../javascripts/mathjax.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       

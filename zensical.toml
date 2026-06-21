@@ -46,6 +46,7 @@ repo_url = "https://github.com/hezhengdong/hezhengdong.github.io"
 # 阅读更多：https://zensical.org/docs/setup/navigation/
 nav = [
   {"SYS" = [
+    "sys/spanner-paper-reading.md",
     {"MIT 6.5840 Lab 记录" = [
         "sys/mit-65840/lab1-mapreduce.md",
         "sys/mit-65840/lab2-kvstore.md",

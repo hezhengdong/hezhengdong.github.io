@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url>
+        <loc>https://hezhengdong.github.io/sys/spanner-paper-reading/</loc>
+      </url>
+      <url>
         <loc>https://hezhengdong.github.io/sys/mit-65840/lab1-mapreduce/</loc>
       </url>
       <url>
